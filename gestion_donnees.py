@@ -34,7 +34,7 @@ class BaseDonnees:
         Pour visualiser les noms des colonnes, appeler préalablement la
         fonction voir_att.
         """
-        raise NotImplementedError
+        self.bd.drop(liste_att, axis=1, inplace=True)
 
 
     def str_a_vec(self, liste_att):
@@ -50,6 +50,21 @@ class BaseDonnees:
         fonction voir_att.
         """
         raise NotImplementedError
+
+
+    def str_a_int(self, liste_att):
+        """
+        Change les valeurs de string des colonnes de la base de données
+        pour des valeurs entières.
+        
+        ``liste_att`` est une liste de string contenant le nom des
+        colonnes de la base de données pour lesquelles les valeurs doivent
+        être changées en valeurs entières.
+
+        Pour visualiser les noms des colonnes, appeler préalablement la
+        fonction voir_att.
+        """
+        self.bd[liste_att] = self.bd[liste_att].astype(int)
 
 
     def normaliser_donnees(self):
@@ -121,6 +136,9 @@ class BaseDonnees:
     def voir_att(self):
         """
         Affiche la liste des noms des colonnes, soit les attributs,
-        et le type de données de chacun des attributs
+        et le type de données de chacun des attributs et
+        retourne la liste du nom des colonnes.
+
         """
-        raise NotImplementedError
+        print(self.bd.dtypes)
+        return self.bd.columns
