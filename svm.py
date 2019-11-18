@@ -6,13 +6,16 @@ import numpy as np
 from tqdm import tqdm
 
 class SVM(Classifieur):
-    def __init__(self, C = 1.0, noyau = 'linear', deg = 3, gamma = 'auto', coef0 = 0):
+    def __init__(self, C = 1.0, noyau = 'linear', deg = 3, gamma = 'scale', coef0 = 0, tol = 1e-3, max_iter = -1):
         self.C = C
         self.noyau = noyau
         self.deg = deg
         self.gamma = gamma
         self.coef0 = coef0
-        self.modele = SVC(C = C, kernel = noyau, degree = deg, gamma = gamma, coef0 = coef0)
+        self.tol = tol
+        self.max_iter = max_iter
+        self.modele = SVC(C = C, kernel = noyau, degree = deg,
+                        gamma = gamma, coef0 = coef0, tol = tol, max_iter = max_iter)
 
     def validation_croisee(self, x_tab, t_tab, k = 10, est_ech_poids = False, *args):
         # Liste des C à explorer
@@ -30,8 +33,8 @@ class SVM(Classifieur):
             liste_erreur = np.zeros((len(liste_C)))
             for i in tqdm(range(len(liste_C))):
                 self.C = liste_C[i]
-                self.modele = SVC(C = self.C, kernel = self.noyau,
-                                degree = self.deg, gamma = self.gamma, coef0 = self.coef0)
+                self.modele = SVC(C = self.C, kernel = self.noyau, degree = self.deg, gamma = self.gamma,
+                                coef0 = self.coef0, tol = self.tol, max_iter = self.max_iter)
                 for j in range(k):
                     # Masque de vrai ou de faux pour déterminer les ensembles D_valid et D_entr
                     liste_ind = np.ones(nb_donnees, dtype = bool)
@@ -51,8 +54,8 @@ class SVM(Classifieur):
                 liste_erreur[i] /= k
 
             self.C = liste_C[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[0]]
-            self.modele = SVC(C = self.C, kernel = self.noyau,
-                            degree = self.deg, gamma = self.gamma, coef0 = self.coef0)
+            self.modele = SVC(C = self.C, kernel = self.noyau, degree = self.deg, gamma = self.gamma,
+                            coef0 = self.coef0, tol = self.tol, max_iter = self.max_iter)
             self.entrainement(x_tab, t_tab, est_ech_poids, args[0])
 
         # Noyau sigmoidal
@@ -66,8 +69,8 @@ class SVM(Classifieur):
                 self.C = liste_C[i]
                 for l in range(len(liste_coef0)):
                     self.coef0 = liste_coef0[l]
-                    self.modele = SVC(C = self.C, kernel = self.noyau,
-                                    degree = self.deg, gamma = self.gamma, coef0 = self.coef0)
+                    self.modele = SVC(C = self.C, kernel = self.noyau, degree = self.deg, gamma = self.gamma,
+                                    coef0 = self.coef0, tol = self.tol, max_iter = self.max_iter)
                     for j in range(k):
                         # Masque de vrai ou de faux pour déterminer les ensembles D_valid et D_entr
                         liste_ind = np.ones(nb_donnees, dtype = bool)
@@ -87,8 +90,8 @@ class SVM(Classifieur):
                     liste_erreur[i, l] /= k
             self.C = liste_C[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[0]]
             self.coef0 = liste_coef0[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[1]]
-            self.modele = SVC(C = self.C, kernel = self.noyau,
-                            degree = self.deg, gamma = self.gamma, coef0 = self.coef0)
+            self.modele = SVC(C = self.C, kernel = self.noyau, degree = self.deg, gamma = self.gamma,
+                            coef0 = self.coef0, tol = self.tol, max_iter = self.max_iter)
             self.entrainement(x_tab, t_tab, est_ech_poids, args[0])
 
         # Noyau polynomial
@@ -108,8 +111,8 @@ class SVM(Classifieur):
                     self.coef0 = liste_coef0[l]
                     for m in range(len(liste_deg)):
                         self.deg = liste_deg[m]
-                        self.modele = SVC(C = self.C, kernel = self.noyau,
-                                        degree = self.deg, gamma = self.gamma, coef0 = self.coef0)
+                        self.modele = SVC(C = self.C, kernel = self.noyau, degree = self.deg, gamma = self.gamma,
+                                        coef0 = self.coef0, tol = self.tol, max_iter = self.max_iter)
                         for j in range(k):
                             # Masque de vrai ou de faux pour déterminer les ensembles D_valid et D_entr
                             liste_ind = np.ones(nb_donnees, dtype = bool)
@@ -130,6 +133,6 @@ class SVM(Classifieur):
             self.C = liste_C[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[0]]
             self.coef0 = liste_coef0[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[1]]
             self.deg = liste_deg[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[2]]
-            self.modele = SVC(C = self.C, kernel = self.noyau,
-                            degree = self.deg, gamma = self.gamma, coef0 = self.coef0)
+            self.modele = SVC(C = self.C, kernel = self.noyau, degree = self.deg, gamma = self.gamma,
+                            coef0 = self.coef0, tol = self.tol, max_iter = self.max_iter)
             self.entrainement(x_tab, t_tab, est_ech_poids, args[0])
