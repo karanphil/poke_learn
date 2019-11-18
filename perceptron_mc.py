@@ -5,18 +5,20 @@ import numpy as np
 from tqdm import tqdm
 
 class PerceptronMC(Classifieur):
-    def __init__(self, couches_cachees, activation = 'relu', solutionneur = 'sgd', apprentissage_type = 'constant'):
+    def __init__(self, couches_cachees, activation = 'relu', solutionneur = 'sgd', apprentissage_type = 'constant', max_iter = 200):
         self.couches_cachees = couches_cachees
         self.activation = activation
         self.solutionneur = solutionneur
         self.apprentissage_type = apprentissage_type
-        self.modele = MLPClassifier(hidden_layer_sizes = couches_cachees, activation = activation, solver = solutionneur, learning_rate = apprentissage_type)
+        self.max_iter = max_iter
+        self.modele = MLPClassifier(hidden_layer_sizes = couches_cachees, activation = activation, 
+                        solver = solutionneur, learning_rate = apprentissage_type, max_iter = max_iter)
 
     def validation_croisee(self, x_tab, t_tab, k = 10, est_ech_poids = False, *args):
         # Liste des lambda à explorer
         lamb_min = 0.000000001
         lamb_max = 2.
-        liste_lamb = np.logspace(np.log(lamb_min), np.log(lamb_max), num = 25, base = np.e)
+        liste_lamb = np.logspace(np.log(lamb_min), np.log(lamb_max), num = 10, base = np.e)
 
         nb_donnees = len(x_tab)
         # 20 % des donnees dans D_valid et 80% des donnees dans D_train
@@ -27,7 +29,7 @@ class PerceptronMC(Classifieur):
         for i in tqdm(range(len(liste_lamb))):
             self.modele = MLPClassifier(hidden_layer_sizes = self.couches_cachees, 
                                 activation = self.activation, solver = self.solutionneur, 
-                                alpha = liste_lamb[i], learning_rate = self.apprentissage_type)
+                                alpha = liste_lamb[i], learning_rate = self.apprentissage_type, max_iter = self.max_iter)
             for j in range(k):
                 # Masque de vrai ou de faux pour déterminer les ensembles D_valid et D_train
                 liste_ind = np.ones(nb_donnees, dtype = bool)
@@ -49,5 +51,5 @@ class PerceptronMC(Classifieur):
         meilleur_lambda = liste_lamb[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[0]]
         self.modele = self.modele = MLPClassifier(hidden_layer_sizes = self.couches_cachees, 
                                         activation = self.activation, solver = self.solutionneur, 
-                                        alpha = meilleur_lambda, learning_rate = self.apprentissage_type)
+                                        alpha = meilleur_lambda, learning_rate = self.apprentissage_type, max_iter = self.max_iter)
         self.entrainement(x_tab, t_tab, est_ech_poids, args[0])
