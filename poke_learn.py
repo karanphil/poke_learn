@@ -32,7 +32,8 @@ def main():
     elif(modele_choix == "fad"):
         nb_arbres = int(sys.argv[i+1])
         critere = sys.argv[i+2]
-        modele = FAD(nb_arbres = nb_arbres, critere = critere)
+        prof_max = sys.argv[i+3]
+        modele = FAD(nb_arbres = nb_arbres, critere = critere, prof_max = prof_max)
     else:
         print("Oups, ce modèle n'existe pas!")
         return 0
