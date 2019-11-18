@@ -2,6 +2,7 @@
 from classifieur import Classifieur
 from sklearn.linear_model import Perceptron as skPerceptron
 import numpy as np
+from tqdm import tqdm
 
 class Perceptron(Classifieur):
     def __init__(self):
@@ -19,7 +20,7 @@ class Perceptron(Classifieur):
         #nb_D_train = nb_donnees - nb_D_valid
 
         liste_erreur = np.zeros((len(liste_lamb)))
-        for i in range(len(liste_lamb)):
+        for i in tqdm(range(len(liste_lamb))):
             self.modele = skPerceptron(penalty = 'l2', alpha = liste_lamb[i], shuffle = False)
             for j in range(k):
                 # Masque de vrai ou de faux pour déterminer les ensembles D_valid et D_train
