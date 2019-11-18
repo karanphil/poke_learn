@@ -45,7 +45,7 @@ class SVM(Classifieur):
                     t_valid = t_tab[np.invert(liste_ind)]
                     # Entrainement sur x_entr et t_entr
                     self.entrainement(x_entr, t_entr, est_ech_poids, args[0])
-                    pred_valid = np.array([self.prediction(x) for x in x_valid])
+                    pred_valid = self.prediction(x_valid)
                     liste_erreur[i] += self.erreur(t_valid, pred_valid)
                 # Moyenne des erreurs pour un C
                 liste_erreur[i] /= k
