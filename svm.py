@@ -18,7 +18,7 @@ class SVM(Classifieur):
         # Liste des C à explorer
         C_min = 1
         C_max = 1000
-        liste_C = int(np.linspace(C_min, C_max, 5))
+        liste_C = np.round(np.linspace(C_min, C_max, 5))
 
         nb_donnees = len(x_tab)
         # 20 % des donnees dans D_valid et 80% des donnees dans D_entr
@@ -96,11 +96,11 @@ class SVM(Classifieur):
             # Liste des coef0 à explorer
             coef0_min = 0
             coef0_max = 5
-            liste_coef0 = np.arange(coef0_min, coef0_max, 1)
+            liste_coef0 = np.arange(coef0_min, coef0_max + 1, 1)
             # Liste des deg à explorer
-            deg_min = 2
+            deg_min = 1
             deg_max = 6
-            liste_deg = np.arange(deg_min, deg_max, 1)
+            liste_deg = np.arange(deg_min, deg_max + 1, 1)
             liste_erreur = np.zeros((len(liste_C), len(liste_coef0), len(liste_deg)))
             for i in tqdm(range(len(liste_C))):
                 self.C = liste_C[i]
