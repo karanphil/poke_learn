@@ -3,6 +3,7 @@
 from classifieur import Classifieur
 from sklearn.svm import SVC
 import numpy as np
+from tqdm import tqdm
 
 class SVM(Classifieur):
     def __init__(self, C = 1.0, noyau = 'linear', deg = 3, gamma = 'auto', coef0 = 0):
@@ -27,7 +28,7 @@ class SVM(Classifieur):
         # Noyau lineaire et rbf
         if(self.noyau == "linear" or self.noyau == "rbf"):
             liste_erreur = np.zeros((len(liste_C)))
-            for i in range(len(liste_C)):
+            for i in tqdm(range(len(liste_C))):
                 self.C = liste_C[i]
                 self.modele = SVC(C = self.C, kernel = self.noyau,
                                 degree = self.deg, gamma = self.gamma, coef0 = self.coef0)
@@ -61,7 +62,7 @@ class SVM(Classifieur):
             coef0_max = 0.01
             liste_coef0 = np.logspace(np.log(coef0_min), np.log(coef0_max), num = 15, base = np.e)
             liste_erreur = np.zeros((len(liste_C), len(liste_coef0)))
-            for i in range(len(liste_C)):
+            for i in tqdm(range(len(liste_C))):
                 self.C = liste_C[i]
                 for l in range(len(liste_coef0)):
                     self.coef0 = liste_coef0[l]
@@ -101,7 +102,7 @@ class SVM(Classifieur):
             deg_max = 6
             liste_deg = np.arange(deg_min, deg_max, 1)
             liste_erreur = np.zeros((len(liste_C), len(liste_coef0), len(liste_deg)))
-            for i in range(len(liste_C)):
+            for i in tqdm(range(len(liste_C))):
                 self.C = liste_C[i]
                 for l in range(len(liste_coef0)):
                     self.coef0 = liste_coef0[l]
