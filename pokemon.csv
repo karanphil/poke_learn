@@ -772,7 +772,7 @@ abilities,against_bug,against_dark,against_dragon,against_electric,against_fairy
 "['Innards Out', 'Unaware']",1,1,1,2,1,1,0.5,1,1,2,1,0.5,1,1,1,1,0.5,0.5,60,3840,70,410,60,Sea Cucumber Pok�mon,130,800000,0.3,55,Namakobushi?????,Pyukumuku,50,771,30,130,5,water,,1.2,7,0
 ['Battle Armor'],1,1,1,1,1,2,1,1,0,1,1,1,1,1,1,1,1,1,95,30720,0,534,3,Synthetic Pok�mon,95,1250000,1.9,95,Type: Null???:??,Type: Null,50,772,95,95,59,normal,,120.5,7,0
 ['RKS System'],1,1,1,1,1,2,1,1,0,1,1,1,1,1,1,1,1,1,95,30720,0,570,3,Synthetic Pok�mon,95,1250000,2.3,95,Silvady??????,Silvally,50,773,95,95,95,normal,,100.5,7,0
-['Shields Down'],0.5,1,1,2,1,1,0.5,0.5,1,1,0,2,0.5,0.5,1,2,2,2,100,6400,70,500,30 (Meteorite)255 (Core),Meteor Pok�mon,60,1059860,0.3,60,Meteno???,Minior,50,774,100,60,120,rock,flying,40,7,0
+['Shields Down'],0.5,1,1,2,1,1,0.5,0.5,1,1,0,2,0.5,0.5,1,2,2,2,100,6400,70,500,255,Meteor Pok�mon,60,1059860,0.3,60,Meteno???,Minior,50,774,100,60,120,rock,flying,40,7,0
 ['Comatose'],1,1,1,1,1,2,1,1,0,1,1,1,1,1,1,1,1,1,115,5120,70,480,45,Drowsing Pok�mon,65,1250000,0.4,65,Nekkoara?????,Komala,50,775,75,95,65,normal,,19.9,7,0
 ['Shell Armor'],0.5,1,2,0.5,1,1,0.25,1,1,0.25,2,1,1,1,1,2,0.5,1,78,5120,70,485,70,Blast Turtle Pok�mon,135,1000000,2,60,Bakugames?????,Turtonator,50,776,91,85,36,fire,dragon,212,7,0
 "['Iron Barbs', 'Lightningrod', 'Sturdy']",0.5,1,0.5,0.5,0.5,2,2,0.25,1,0.5,4,0.5,0.5,0,0.5,0.5,0.25,1,98,2560,70,435,180,Roly-Poly Pok�mon,63,1000000,0.3,65,Togedemaru?????,Togedemaru,50,777,40,73,96,electric,steel,3.3,7,0
