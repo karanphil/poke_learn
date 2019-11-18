@@ -7,6 +7,7 @@
 
 import numpy as np
 import pandas as pd
+from sklearn import preprocessing
 
 
 class BaseDonnees:
@@ -31,7 +32,7 @@ class BaseDonnees:
         ``liste_att`` est une liste de string contenant le nom des
         colonnes de la base de données à retirer de l'objet base de données.
 
-        Pour visualiser les noms des colonnes, appeler préalablement la
+        Pour visualiser les noms des colonnes, appeler préalableimportment la
         fonction voir_att.
         """
         self.bd.drop(liste_att, axis=1, inplace=True)
@@ -49,7 +50,15 @@ class BaseDonnees:
         Pour visualiser les noms des colonnes, appeler préalablement la
         fonction voir_att.
         """
-        raise NotImplementedError
+        enc = preprocessing.OneHotEncoder()
+        for l in liste_att: 
+            self.bd[l] = self.bd[l].fillna(value= 'vide')
+            vec = enc.fit_transform(self.bd[l].to_numpy().reshape(-1,1)).toarray()
+            categories = enc.categories_[0]
+            for i in range(len(categories)):
+                self.bd[categories[i]] = vec[:,i].astype(int)
+        self.enlever_attributs(liste_att)
+        print(self.bd.dtypes)
 
 
     def str_a_int(self, liste_att):
@@ -71,6 +80,19 @@ class BaseDonnees:
         """
         Normalise et recentre les données en soustrayant avec la moyenne pour
         ensuite diviser par l'écart-type.
+
+        Cette méthode suppose que toutes les données sont de types numériques
+        Sinon, appelez la méthode str_a_vec avec le nom des attributs qui ne sont
+        pas en valeurs numériques.
+        """
+        raise NotImplementedError
+
+
+    def calculer_cc(self, att1, att2):
+        """
+        Retourne le coefficient de corrélation entre deux attributs.
+
+        ***** À revoir
 
         Cette méthode suppose que toutes les données sont de types numériques
         Sinon, appelez la méthode str_a_vec avec le nom des attributs qui ne sont
@@ -117,21 +139,20 @@ class BaseDonnees:
         Sinon, appelez la méthode str_a_vec avec le nom des attributs qui ne sont
         pas en valeurs numériques.
         """
-        raise NotImplementedError
+        nb_leg = 0
+        nb_leg_requis = 20
+        bd_entr = self.bd.drop('is_legendary', axis=1)
+        bd_test = self.bd['is_legendary']
 
-
-    def calculer_cc(self, att1, att2):
-        """
-        Retourne le coefficient de corrélation entre deux attributs.
-
-        ***** À revoir
-
-        Cette méthode suppose que toutes les données sont de types numériques
-        Sinon, appelez la méthode str_a_vec avec le nom des attributs qui ne sont
-        pas en valeurs numériques.
-        """
-        raise NotImplementedError
-
+        while nb_leg < nb_leg_requis:
+            masque = np.random.rand(len(self.bd)) < prop_entr
+            x_entr = bd_entr[masque].to_numpy()
+            t_entr = bd_test[masque].to_numpy()
+            x_test = bd_entr[~masque].to_numpy()
+            t_test = bd_test[~masque].to_numpy()
+            nb_leg = np.sum(t_entr)
+        
+        return x_entr, t_entr, x_test, t_test
 
     def voir_att(self):
         """
@@ -140,5 +161,5 @@ class BaseDonnees:
         retourne la liste du nom des colonnes.
 
         """
-        print(self.bd.dtypes)
+        # print(self.bd.dtypes)
         return self.bd.columns
