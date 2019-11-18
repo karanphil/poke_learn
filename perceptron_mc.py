@@ -5,7 +5,7 @@ import numpy as np
 from tqdm import tqdm
 
 class PerceptronMC(Classifieur):
-    def __init__(self, couches_cachees, activation, solutionneur, apprentissage_type = 'constant'):
+    def __init__(self, couches_cachees, activation = 'relu', solutionneur = 'sgd', apprentissage_type = 'constant'):
         self.couches_cachees = couches_cachees
         self.activation = activation
         self.solutionneur = solutionneur
