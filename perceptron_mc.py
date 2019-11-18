@@ -2,6 +2,7 @@
 from classifieur import Classifieur
 from sklearn.neural_network import MLPClassifier
 import numpy as np
+from tqdm import tqdm
 
 class PerceptronMC(Classifieur):
     def __init__(self, couches_cachees, activation, solutionneur, apprentissage_type = 'constant'):
@@ -23,7 +24,7 @@ class PerceptronMC(Classifieur):
         #nb_D_train = nb_donnees - nb_D_valid
 
         liste_erreur = np.zeros((len(liste_lamb)))
-        for i in range(len(liste_lamb)):
+        for i in tqdm(range(len(liste_lamb))):
             self.modele = MLPClassifier(hidden_layer_sizes = couches_cachees, 
                                 activation = activation, solver = solutionneur, 
                                 alpha = liste_lamb[i], learning_rate = apprentissage_type)
