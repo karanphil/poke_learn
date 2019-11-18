@@ -38,12 +38,12 @@ def main():
         return 0
 
     # Entrainement ou validation croisée
-    if vc is False:
+    if bool(vc) is False:
         print("Début de l'entrainement simple...")
         modele.entrainement(x_entr, t_entr, est_ech_poids, ech_poids) # Il faudra fournir ech_poids de Gestion des données!!!
     else:
         print("Début de l'entrainement par validation croisée...")
-        modele.validation_croisee(x_entr, t_entr, est_ech_poids, ech_poids) # Il faudra fournir ech_poids de Gestion des données!!!
+        modele.validation_croisee(x_entr, t_entr, 10, est_ech_poids, ech_poids) # Il faudra fournir ech_poids de Gestion des données!!!
 
     # Prédiction et erreur
     print("Calcul des erreurs...")
