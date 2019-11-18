@@ -25,9 +25,9 @@ class PerceptronMC(Classifieur):
 
         liste_erreur = np.zeros((len(liste_lamb)))
         for i in tqdm(range(len(liste_lamb))):
-            self.modele = MLPClassifier(hidden_layer_sizes = couches_cachees, 
-                                activation = activation, solver = solutionneur, 
-                                alpha = liste_lamb[i], learning_rate = apprentissage_type)
+            self.modele = MLPClassifier(hidden_layer_sizes = self.couches_cachees, 
+                                activation = self.activation, solver = self.solutionneur, 
+                                alpha = liste_lamb[i], learning_rate = self.apprentissage_type)
             for j in range(k):
                 # Masque de vrai ou de faux pour déterminer les ensembles D_valid et D_train
                 liste_ind = np.ones(nb_donnees, dtype = bool)
@@ -47,7 +47,7 @@ class PerceptronMC(Classifieur):
             liste_erreur[i] /= k
 
         meilleur_lambda = liste_lamb[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[0]]
-        self.modele = self.modele = MLPClassifier(hidden_layer_sizes = couches_cachees, 
-                                        activation = activation, solver = solutionneur, 
-                                        alpha = meilleur_lambda, learning_rate = apprentissage_type)
+        self.modele = self.modele = MLPClassifier(hidden_layer_sizes = self.couches_cachees, 
+                                        activation = self.activation, solver = self.solutionneur, 
+                                        alpha = meilleur_lambda, learning_rate = self.apprentissage_type)
         self.entrainement(x_tab, t_tab, est_ech_poids, args[0])
