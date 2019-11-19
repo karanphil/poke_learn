@@ -21,10 +21,6 @@ class BaseDonnees:
         self.bd = pd.read_csv(fichier)
 
 
-    def test_affichage(self):
-        print(self.bd[0:5])
-
-
     def enlever_attributs(self, liste_att):
         """
         Enlève des colonnes de l'objet base de données de la classe.
@@ -36,6 +32,7 @@ class BaseDonnees:
         fonction voir_att.
         """
         self.bd.drop(liste_att, axis=1, inplace=True)
+        print('Attributs ' + str(liste_att) + ' retires de la base de donnees')
 
 
     def str_a_vec(self, liste_att):
@@ -52,13 +49,17 @@ class BaseDonnees:
         """
         enc = preprocessing.OneHotEncoder()
         for l in liste_att: 
-            self.bd[l] = self.bd[l].fillna(value= 'vide')
+            self.bd[l] = self.bd[l].fillna(value= 'Vide')
             vec = enc.fit_transform(self.bd[l].to_numpy().reshape(-1,1)).toarray()
             categories = enc.categories_[0]
-            for i in range(len(categories)):
-                self.bd[categories[i]] = vec[:,i].astype(int)
+            if l == 'type2':
+                self.bd[categories[0]] = vec[:,0].astype(int)
+                self.bd[categories[1:]] += vec[:, 1:]
+            else:
+                for i in range(len(categories)):
+                    self.bd[categories[i]] = vec[:,i].astype(int)
         self.enlever_attributs(liste_att)
-        print(self.bd.dtypes)
+        print('Attributs ' + str(liste_att) + ' changes en one hot vector')
 
 
     def str_a_int(self, liste_att):
@@ -74,6 +75,7 @@ class BaseDonnees:
         fonction voir_att.
         """
         self.bd[liste_att] = self.bd[liste_att].astype(int)
+        print('Attributs ' + str(liste_att) + ' changes en valeurs numerique entieres')
 
 
     def normaliser_donnees(self):
@@ -151,7 +153,7 @@ class BaseDonnees:
             x_test = bd_entr[~masque].to_numpy()
             t_test = bd_test[~masque].to_numpy()
             nb_leg = np.sum(t_entr)
-        
+        print('Ensembles dentrainement et de test generes')
         return x_entr, t_entr, x_test, t_test
 
     def voir_att(self):
