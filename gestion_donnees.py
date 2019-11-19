@@ -53,7 +53,6 @@ class BaseDonnees:
             vec = enc.fit_transform(self.bd[l].to_numpy().reshape(-1,1)).toarray()
             categories = enc.categories_[0]
             if l == 'type2':
-                self.bd[categories[0]] = vec[:,0].astype(int)
                 self.bd[categories[1:]] += vec[:, 1:]
             else:
                 for i in range(len(categories)):
