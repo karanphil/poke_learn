@@ -16,7 +16,7 @@ def main():
     modele_choix = sys.argv[i]
 
     # Gestion des données
-    bd = BaseDonnees()
+    bd = BaseDonnees(fichier)
     liste_colonne = bd.voir_att()
     bd.enlever_attributs(liste_colonne[0:20])
     bd.enlever_attributs(['japanese_name', 'name', 'generation', 'pokedex_number', 'classfication'])
