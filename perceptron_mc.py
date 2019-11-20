@@ -49,7 +49,7 @@ class PerceptronMC(Classifieur):
             liste_erreur[i] /= k
 
         meilleur_lambda = liste_lamb[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[0]]
-        self.modele = self.modele = MLPClassifier(hidden_layer_sizes = self.couches_cachees, 
+        self.modele = MLPClassifier(hidden_layer_sizes = self.couches_cachees, 
                                         activation = self.activation, solver = self.solutionneur, 
                                         alpha = meilleur_lambda, learning_rate = self.apprentissage_type, max_iter = self.max_iter)
         self.entrainement(x_tab, t_tab, est_ech_poids, args[0])
