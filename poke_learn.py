@@ -6,14 +6,23 @@ from perceptron_mc import PerceptronMC
 from svm import SVM
 from fad import FAD
 from adaboost import AdaBoost
+from gestion_donnees import BaseDonnees
 
 def main():
-    vc = sys.argv[1]
-    est_ech_poids = sys.argv[2]
-    i = 3
+    fichier = sys.argv[1]
+    vc = sys.argv[2]
+    est_ech_poids = sys.argv[3]
+    i = 4
     modele_choix = sys.argv[i]
 
     # Gestion des données
+    bd = BaseDonnees()
+    liste_colonne = bd.voir_att()
+    bd.enlever_attributs(liste_colonne[0:20])
+    bd.enlever_attributs(['japanese_name', 'name', 'generation', 'pokedex_number', 'classfication'])
+    bd.str_a_int(['capture_rate'])
+    bd.str_a_vec(['type1', 'type2'])
+    x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
 
     # Gestion du modèle
     print("Création du mondèle...")
