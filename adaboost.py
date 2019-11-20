@@ -1,10 +1,60 @@
 # -*- coding: utf-8 -*-
 from classifieur import Classifieur
 from sklearn.ensemble import AdaBoostClassifier
+from sklearn.tree import DecisionTreeClassifier
+import numpy as np
+from tqdm import tqdm
 
 class AdaBoost(Classifieur):
-    def __init__(self, base_estimateur = None):
-        self.modele = AdaBoostClassifier(base_estimator = base_estimateur)
+    def __init__(self, max_prof = 1, nb_estimateur = 50, lamb = 1.):
+        self.max_prof = max_prof
+        self.nb_estimateur = nb_estimateur
+        self.lamb = lamb
+        self.modele = AdaBoostClassifier(base_estimator = DecisionTreeClassifier(max_depth = max_prof),
+                        n_estimators = nb_estimateur, learning_rate = lamb)
 
-    def validation_croisee(self, x_entr, t_entr, est_ech_poids = False, *args):
-        raise NotImplementedError
+    def validation_croisee(self, x_tab, t_tab, k = 10, est_ech_poids = False, *args):
+        # Liste des lambda à explorer
+        lamb_min = 0.000000001
+        lamb_max = 2.
+        liste_lamb = np.logspace(np.log(lamb_min), np.log(lamb_max), num = 10, base = np.e)
+        # Liste des nb_estimateur à explorer
+        estimateur_min = 20
+        estimateur_max = 80
+        liste_estimateur = np.linspace(estimateur_min, estimateur_max, 7).astype(int)
+
+        nb_donnees = len(x_tab)
+        # 20 % des donnees dans D_valid et 80% des donnees dans D_train
+        nb_D_valid = int(np.floor(0.20 * nb_donnees))
+        #nb_D_train = nb_donnees - nb_D_valid
+
+        liste_erreur = np.zeros((len(liste_lamb), len(liste_estimateur)))
+        for i in tqdm(range(len(liste_lamb))):
+            self.lamb = liste_lamb[i]
+            for l in range(len(liste_estimateur)):
+                self.nb_estimateur = liste_estimateur[l]
+                self.modele = AdaBoostClassifier(base_estimator = DecisionTreeClassifier(max_depth = self.max_prof),
+                            n_estimators = self.nb_estimateur, learning_rate = self.lamb)
+                for j in range(k):
+                    # Masque de vrai ou de faux pour déterminer les ensembles D_valid et D_train
+                    liste_ind = np.ones(nb_donnees, dtype = bool)
+                    liste_ind[0:nb_D_valid] = 0
+                    np.random.shuffle(liste_ind)
+                    # D_valid correspond a faux 
+                    # Division de D en deux groupes formes aleatoirement : D_train et D_valid
+                    x_entr = x_tab[liste_ind]
+                    x_valid = x_tab[np.invert(liste_ind)]
+                    t_entr = t_tab[liste_ind]
+                    t_valid = t_tab[np.invert(liste_ind)]
+                    # Entrainement sur x_train et t_train
+                    self.entrainement(x_entr, t_entr, est_ech_poids, args[0])
+                    pred_valid = self.prediction(x_valid)
+                    liste_erreur[i, l] += self.erreur(t_valid, pred_valid)
+                # Moyenne des erreurs pour un lamb
+                liste_erreur[i, l] /= k
+
+        self.lamb = liste_lamb[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[0]]
+        self.nb_estimateur = liste_estimateur[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[1]]
+        self.modele = self.modele = AdaBoostClassifier(base_estimator = DecisionTreeClassifier(max_depth = self.max_prof),
+                        n_estimators = self.nb_estimateur, learning_rate = self.lamb)
+        self.entrainement(x_tab, t_tab, est_ech_poids, args[0])
