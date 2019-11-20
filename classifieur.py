@@ -42,7 +42,7 @@ class Classifieur:
 
     def validation_croisee(self, x_entr, t_entr, est_ech_poids = False, *args):
         """
-        Cette méthode utile simplement la méthode ``entrainement()``, qui est le cas
+        Cette méthode utilise simplement la méthode ``entrainement()``, qui est le cas
         le plus général pour certains modèles. Des véritables validations croisées 
         propres aux modèles sont appelées directement dans les modèles.
         """
