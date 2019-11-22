@@ -54,10 +54,10 @@ def main():
     # Entrainement ou validation croisée
     if bool(vc) is False:
         print("Début de l'entrainement simple...")
-        modele.entrainement(x_entr, t_entr, est_ech_poids, ech_poids) # Il faudra fournir ech_poids de Gestion des données!!!
+        modele.entrainement(x_entr, t_entr, est_ech_poids, []) # Il faudra fournir ech_poids de Gestion des données!!!
     else:
         print("Début de l'entrainement par validation croisée...")
-        modele.validation_croisee(x_entr, t_entr, 10, est_ech_poids, ech_poids) # Il faudra fournir ech_poids de Gestion des données!!!
+        modele.validation_croisee(x_entr, t_entr, 10, est_ech_poids, []) # Il faudra fournir ech_poids de Gestion des données!!!
 
     # Prédiction et erreur
     print("Calcul des erreurs...")
@@ -66,6 +66,9 @@ def main():
 
     predictions_test = modele.prediction(x_test)
     erreur_test = modele.erreur(t_test, predictions_test) / len(t_test) * 100
+
+    print('Erreur train = ', erreur_entrainement, '%')
+    print('Erreur test = ', erreur_test, '%')
 
     # Analyse des résultats
 
