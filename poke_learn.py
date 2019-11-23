@@ -10,16 +10,16 @@ from gestion_donnees import BaseDonnees
 
 def main():
     fichier = sys.argv[1]
-    vc = sys.argv[2]
-    est_ech_poids = sys.argv[3]
+    vc = int(sys.argv[2])
+    est_ech_poids = int(sys.argv[3])
     i = 4
     modele_choix = sys.argv[i]
 
     # Gestion des données
     bd = BaseDonnees(fichier)
     liste_colonne = bd.voir_att()
-    bd.enlever_attributs(liste_colonne[0:20])
-    bd.enlever_attributs(['japanese_name', 'name', 'generation', 'pokedex_number', 'classfication'])
+    #bd.enlever_attributs(liste_colonne[0:20])
+    bd.enlever_attributs(['abilities', 'japanese_name', 'name', 'generation', 'pokedex_number', 'classfication'])
     bd.str_a_int(['capture_rate'])
     bd.str_a_vec(['type1', 'type2'])
     x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
@@ -42,10 +42,10 @@ def main():
     elif(modele_choix == "fad"):
         nb_arbres = int(sys.argv[i+1])
         critere = sys.argv[i+2]
-        prof_max = sys.argv[i+3]
+        prof_max = int(sys.argv[i+3])
         modele = FAD(nb_arbres = nb_arbres, critere = critere, prof_max = prof_max)
     elif(modele_choix == "adaboost"):
-        max_prof = sys.argv[i+2]
+        max_prof = int(sys.argv[i+2])
         modele = AdaBoost(max_prof = max_prof)
     else:
         print("Oups, ce modèle n'existe pas!")
