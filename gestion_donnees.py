@@ -7,11 +7,12 @@
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn import preprocessing
 
 
 class BaseDonnees:
-    def __init__(self, fichier):
+    def __init__(self, fichier, attribut_interet):
         """
         Classe effectuant le traitement de la base de données ainsi que
         l'analyse des éléments utiles dans la base de données.
@@ -19,6 +20,7 @@ class BaseDonnees:
         """
         self.fichier = fichier
         self.bd = pd.read_csv(fichier)
+        self.att_int = attribut_interet
 
 
     def enlever_attributs(self, liste_att):
@@ -86,7 +88,9 @@ class BaseDonnees:
         Sinon, appelez la méthode str_a_vec avec le nom des attributs qui ne sont
         pas en valeurs numériques.
         """
-        raise NotImplementedError
+        liste_norm = self.bd.loc[:, self.bd.std() > 1].columns
+        self.bd[liste_norm] = (self.bd[liste_norm] - self.bd[liste_norm].mean()) / self.bd[liste_norm].std()
+        print('Normalisation des données avec un écart-type supérieur à 1')
 
 
     def calculer_cc(self, att1, att2):
@@ -142,8 +146,8 @@ class BaseDonnees:
         """
         nb_leg = 0
         nb_leg_requis = 20
-        bd_donnees = self.bd.drop('is_legendary', axis=1)
-        bd_cible = self.bd['is_legendary']
+        bd_donnees = self.bd.drop(self.att_int, axis=1)
+        bd_cible = self.bd[self.att_int]
 
         while nb_leg < nb_leg_requis:
             masque = np.random.rand(len(self.bd)) < prop_entr
@@ -166,4 +170,16 @@ class BaseDonnees:
         return self.bd.columns
 
     def enregistre_bd(self, nouvelle_bd, nom_fichier):
-        nouvelle_bd.to_csv(nom_fichier)
+        nouvelle_bd.to_csv(nom_fichier, index= False)
+
+    def comparer_attributs(self, att_1, att_2):
+        x = self.bd[att_1].to_numpy()
+        y = self.bd[att_2].to_numpy()
+        colors = self.bd[self.att_int].to_numpy()
+
+        plt.scatter(x, y, c= colors)
+        plt.xlabel(att_1)
+        plt.ylabel(att_2)
+        plt.title('Comparaison ' + att_1 + ' et ' + att_2 + ' avec ' + self.att_int)
+        plt.show()
+
