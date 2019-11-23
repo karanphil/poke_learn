@@ -12,7 +12,7 @@ from sklearn import preprocessing
 
 
 class BaseDonnees:
-    def __init__(self, fichier, attribut_interet):
+    def __init__(self, fichier, attribut_cible):
         """
         Classe effectuant le traitement de la base de données ainsi que
         l'analyse des éléments utiles dans la base de données.
@@ -20,7 +20,7 @@ class BaseDonnees:
         """
         self.fichier = fichier
         self.bd = pd.read_csv(fichier)
-        self.att_int = attribut_interet
+        self.att_cible = attribut_cible
 
 
     def enlever_attributs(self, liste_att):
@@ -93,31 +93,42 @@ class BaseDonnees:
         print('Normalisation des données avec un écart-type supérieur à 1')
 
 
-    def calculer_cc(self, att1, att2):
+    def calculer_cc(self, afficher=False):
         """
-        Retourne le coefficient de corrélation entre deux attributs.
-
-        ***** À revoir
+        Retourne le coefficient de corrélation entre tous les attributs.
 
         Cette méthode suppose que toutes les données sont de types numériques
         Sinon, appelez la méthode str_a_vec avec le nom des attributs qui ne sont
         pas en valeurs numériques.
         """
-        raise NotImplementedError
+        cc = self.bd.corr()
+        if afficher:
+            self.afficher_cc(cc)
+        return cc
 
 
-    def selectionner_att_corr(self, seuil_cc = 0.8):
+    def methode_filtrage(self, seuil_cc = 0.1):
+        """
+        Applique la méthode de filtrage afin de sélectionner les variables
+        nécessaires à l'entrainement. Retire les colonnes inutiles de la
+        base de données.
+        ``seuil_cc`` est un seuil qui est appliqué pour ne garder que les attributs
+        corrélés avec l'attribut cible
+
+        """
+        corr_avc_leg = abs(self.calculer_cc[self.att_cible]).drop(self.att_cible, axis=1)
+        att_pertinents = corr_avc_leg[corr_avc_leg > seuil_cc].index
+
+        att_pertinents = self.correlation_entre_att(att_pertinents)
+        self.bd = self.bd[att_pertinents]
+        print('Méthode de filtrage appliquée')
+
+
+    def correlation_entre_att(att):
         """
         À Revoir
         """
-        raise NotImplementedError
-
-
-    def selectionner_att_non_corr_leg(self, seuil_cc = 0.8):
-        """
-        À Revoir
-        """
-        raise NotImplementedError
+        bd_cc = self.bd[att].corr() > 0.65
 
 
     def definir_poids_att(self):
@@ -146,8 +157,8 @@ class BaseDonnees:
         """
         nb_leg = 0
         nb_leg_requis = 20
-        bd_donnees = self.bd.drop(self.att_int, axis=1)
-        bd_cible = self.bd[self.att_int]
+        bd_donnees = self.bd.drop(self.att_cible, axis=1)
+        bd_cible = self.bd[self.att_cible]
 
         while nb_leg < nb_leg_requis:
             masque = np.random.rand(len(self.bd)) < prop_entr
@@ -159,20 +170,39 @@ class BaseDonnees:
         print('Ensembles dentrainement et de test générés')
         return x_entr, t_entr, x_test, t_test
 
+
     def voir_att(self):
         """
         Affiche la liste des noms des colonnes, soit les attributs,
         et le type de données de chacun des attributs et
         retourne la liste du nom des colonnes.
-
         """
         print(self.bd.dtypes)
         return self.bd.columns
 
+
     def enregistre_bd(self, nouvelle_bd, nom_fichier):
+        """
+        Enregistre une base de données sous le format csv
+
+        ``nouvelle_bd`` est la base de données à enregistrer 
+        (pas nécessairement celle de la classe)
+        ``nom_fichier`` est l'endroit et le nom du fichier où 
+        enregistrer la base de données 
+
+        """
         nouvelle_bd.to_csv(nom_fichier, index= False)
 
-    def comparer_attributs(self, att_1, att_2):
+
+    def afficher_comparaison_attributs(self, att_1, att_2):
+        """
+        Affiche le graphique de l'attribut 1 en fonction du deuxième avec 
+        une identification des données légendaires ou non
+
+        ``att_1`` est l'attribut d'intérêt 1
+        ``att_2`` est l'attribut d'intérêt 2
+
+        """
         x = self.bd[att_1].to_numpy()
         y = self.bd[att_2].to_numpy()
         colors = self.bd[self.att_int].to_numpy()
@@ -183,3 +213,9 @@ class BaseDonnees:
         plt.title('Comparaison ' + att_1 + ' et ' + att_2 + ' avec ' + self.att_int)
         plt.show()
 
+
+    def afficher_cc(self, cc):
+        plt.matshow(cc)
+        plt.xticks(range(self.bd.shape[1]), self.bd.columns, fontsize=6, rotation=90)
+        plt.yticks(range(self.bd.shape[1]), self.bd.columns, fontsize=6)
+        plt.show()
