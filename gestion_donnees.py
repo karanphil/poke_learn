@@ -32,7 +32,7 @@ class BaseDonnees:
         fonction voir_att.
         """
         self.bd.drop(liste_att, axis=1, inplace=True)
-        print('Attributs ' + str(liste_att) + ' retires de la base de donnees')
+        print('Attributs ' + str(liste_att) + ' retirés de la base de données')
 
 
     def str_a_vec(self, liste_att):
@@ -58,7 +58,7 @@ class BaseDonnees:
                 for i in range(len(categories)):
                     self.bd[categories[i]] = vec[:,i].astype(int)
         self.enlever_attributs(liste_att)
-        print('Attributs ' + str(liste_att) + ' changes en one hot vector')
+        print('Attributs ' + str(liste_att) + ' changés en one hot vector')
 
 
     def str_a_int(self, liste_att):
@@ -74,7 +74,7 @@ class BaseDonnees:
         fonction voir_att.
         """
         self.bd[liste_att] = self.bd[liste_att].astype(int)
-        print('Attributs ' + str(liste_att) + ' changes en valeurs numerique entieres')
+        print('Attributs ' + str(liste_att) + ' changés en valeurs numériques entières')
 
 
     def normaliser_donnees(self):
@@ -142,17 +142,17 @@ class BaseDonnees:
         """
         nb_leg = 0
         nb_leg_requis = 20
-        bd_entr = self.bd.drop('is_legendary', axis=1)
-        bd_test = self.bd['is_legendary']
+        bd_donnees = self.bd.drop('is_legendary', axis=1)
+        bd_cible = self.bd['is_legendary']
 
         while nb_leg < nb_leg_requis:
             masque = np.random.rand(len(self.bd)) < prop_entr
-            x_entr = bd_entr[masque].to_numpy()
-            t_entr = bd_test[masque].to_numpy()
-            x_test = bd_entr[~masque].to_numpy()
-            t_test = bd_test[~masque].to_numpy()
+            x_entr = bd_donnees[masque].to_numpy()
+            t_entr = bd_cible[masque].to_numpy()
+            x_test = bd_donnees[~masque].to_numpy()
+            t_test = bd_cible[~masque].to_numpy()
             nb_leg = np.sum(t_entr)
-        print('Ensembles dentrainement et de test generes')
+        print('Ensembles dentrainement et de test générés')
         return x_entr, t_entr, x_test, t_test
 
     def voir_att(self):
@@ -162,5 +162,8 @@ class BaseDonnees:
         retourne la liste du nom des colonnes.
 
         """
-        # print(self.bd.dtypes)
+        print(self.bd.dtypes)
         return self.bd.columns
+
+    def enregistre_bd(self, nouvelle_bd, nom_fichier):
+        nouvelle_bd.to_csv(nom_fichier)
