@@ -107,40 +107,63 @@ class BaseDonnees:
         return cc
 
 
-    def methode_filtrage(self, seuil_cc = 0.1):
+    def methode_filtrage(self, comp_att = True, seuil_cc = 0.1):
         """
         Applique la méthode de filtrage afin de sélectionner les variables
         nécessaires à l'entrainement. Retire les colonnes inutiles de la
         base de données.
         ``seuil_cc`` est un seuil qui est appliqué pour ne garder que les attributs
         corrélés avec l'attribut cible
-
         """
-        corr_avc_leg = abs(self.calculer_cc[self.att_cible]).drop(self.att_cible, axis=1)
-        att_pertinents = corr_avc_leg[corr_avc_leg > seuil_cc].index
-
-        att_pertinents = self.correlation_entre_att(att_pertinents)
+        corr_avc_cible = abs(self.calculer_cc()[self.att_cible])
+        att_pertinents = list(corr_avc_cible[corr_avc_cible > seuil_cc].index)
+        if comp_att:
+            att_pertinents = self.comparaison_corr_entre_att(att_pertinents, corr_avc_cible)
         self.bd = self.bd[att_pertinents]
         print('Méthode de filtrage appliquée')
 
 
-    def correlation_entre_att(att):
+    def comparaison_corr_entre_att(self, att, corr_avc_cible, seuil_cc = 0.65):
         """
-        À Revoir
+        Filtre les attributs ayant des corrélations entre eux.
+        ``corr_avc_cible`` est un vecteur format pandas des corrélations des attributs 
+        avec l'attribut cible
+        ``seuil_cc`` est un seuil qui est appliqué pour considérer les attributs fortement 
+        corrélés entre eux.
         """
-        bd_cc = self.bd[att].corr() > 0.65
+        att.remove(self.att_cible)
+        att_pertinents = []
+        bd_cc = self.bd[att].corr() > seuil_cc
+        for i in bd_cc.columns:
+            k=0
+            for j in bd_cc.columns:
+                if (bd_cc[i][j] == True) and (i != j):
+                    k+=1
+                    if (corr_avc_cible[i] > corr_avc_cible[j]) and (i not in att_pertinents):
+                        att_pertinents.append(i)
+                    elif (j not in att_pertinents):
+                        att_pertinents.append(j)
+            if k==0:
+                att_pertinents.append(i)
+        att_pertinents.append(self.att_cible)
+        return att_pertinents
 
 
     def definir_poids_att(self):
         """
         Retourne un vecteur de poids entre 0 et 1 de chacun des attributs
-        selon le coefficient de corrélation entre l'attribut et is_legendary
+        selon le coefficient de corrélation entre les attributs et l'attribut cible
 
         Cette méthode suppose que toutes les données sont de types numériques
         Sinon, appelez la méthode str_a_vec avec le nom des attributs qui ne sont
         pas en valeurs numériques.
         """
-        raise NotImplementedError
+        corr_avc_cible = abs(self.calculer_cc()[self.att_cible])
+        corr_avc_cible.drop(self.att_cible, inplace=True)
+        poids_att = corr_avc_cible.to_numpy()
+        return poids_att
+        
+
 
 
     def faire_ens_entr_test(self, prop_entr = 0.7):
@@ -189,7 +212,6 @@ class BaseDonnees:
         (pas nécessairement celle de la classe)
         ``nom_fichier`` est l'endroit et le nom du fichier où 
         enregistrer la base de données 
-
         """
         nouvelle_bd.to_csv(nom_fichier, index= False)
 
@@ -201,7 +223,6 @@ class BaseDonnees:
 
         ``att_1`` est l'attribut d'intérêt 1
         ``att_2`` est l'attribut d'intérêt 2
-
         """
         x = self.bd[att_1].to_numpy()
         y = self.bd[att_2].to_numpy()
@@ -215,6 +236,11 @@ class BaseDonnees:
 
 
     def afficher_cc(self, cc):
+        """
+        Affiche le graphique des corrélations des attributs
+
+        ``cc`` est la matrice de corrélation des attributs
+        """
         plt.matshow(cc)
         plt.xticks(range(self.bd.shape[1]), self.bd.columns, fontsize=6, rotation=90)
         plt.yticks(range(self.bd.shape[1]), self.bd.columns, fontsize=6)
