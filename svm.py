@@ -6,6 +6,27 @@ import numpy as np
 from tqdm import tqdm
 
 class SVM(Classifieur):
+    '''
+    Implémentation du modèle de machine à vecteurs de support. 
+    Cette classe possède une initialisation, ainsi qu'une validation 
+    croisée qui lui est propre et qui dépend du type de noyau choisi. 
+
+    L'initialisation prend en entrée les paramètres suivants :
+    -C, le paramètre d'erreur, utilisé dans la validation croisée (vc)
+    -le type de noyau : linear, poly, rbf, sigmoid
+    -le degré du polynôme si poly est choisi, utilisé dans la vc
+    -le facteur multiplicatif si rbf, poly ou sigmoid sont choisis,
+        choisi par défaut à 'scale', peut être 'auto' ou un float
+    -le terme additif si poly ou sigmoid sont choisis, utilisé dans la vc
+    -le critère d'arrêt, facultatif
+    -le maximum d'itérations, -1 par défaut, qui signifie infini
+
+    La validation croisée utilise les paramètres spécifiés ci-haut
+    comme hyperparamètres, en plus d'être de type "k-fold".
+
+    Toutes les autres méthodes proviennent de la classe parent
+    Classifieur, qui se charge des méthodes générales.
+    '''
     def __init__(self, C = 1.0, noyau = 'linear', deg = 3, gamma = 'scale', coef0 = 0, tol = 1e-3, max_iter = -1):
         self.C = C
         self.noyau = noyau
