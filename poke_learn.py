@@ -35,7 +35,7 @@ def main():
         activation = sys.argv[i+2]
         solutionneur = sys.argv[i+3]
         modele = PerceptronMC(couches_cachees = couches_cachees, 
-                    activation = activation, solutionneur = solutionneur, max_iter = 200)
+                    activation = activation, solutionneur = solutionneur, max_iter = 20000)
     elif(modele_choix == "svm"):
         noyau = sys.argv[i+1]
         modele = SVM(noyau = noyau, tol = 1e-3, max_iter = -1)
@@ -45,7 +45,7 @@ def main():
         prof_max = int(sys.argv[i+3])
         modele = FAD(nb_arbres = nb_arbres, critere = critere, prof_max = prof_max)
     elif(modele_choix == "adaboost"):
-        max_prof = int(sys.argv[i+2])
+        max_prof = int(sys.argv[i+1])
         modele = AdaBoost(max_prof = max_prof)
     else:
         print("Oups, ce modèle n'existe pas!")
