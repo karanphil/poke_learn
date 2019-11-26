@@ -103,7 +103,7 @@ class BaseDonnees:
         """
         cc = self.bd.corr()
         if afficher:
-            self.afficher_cc(cc)
+            self.afficher_cc(abs(cc))
         return cc
 
 
@@ -149,6 +149,19 @@ class BaseDonnees:
         return att_pertinents
 
 
+    def enlever_att_corr(self, seuil_cc = 0.4):
+            """
+            Retire les attributs très corrélés avec l'attribut cible de la
+            base de données.
+            ``seuil_cc`` est un seuil qui est appliqué pour ne garder que les attributs
+            peu corrélés avec l'attribut cible
+            """
+            corr_avc_cible = abs(self.calculer_cc()[self.att_cible])
+            att_pertinents = list(corr_avc_cible[corr_avc_cible < seuil_cc].index)
+            self.bd = self.bd[att_pertinents]
+            print('Attributs très corrélés enlevés')
+
+
     def definir_poids_att(self):
         """
         Retourne un vecteur de poids entre 0 et 1 de chacun des attributs
@@ -163,8 +176,6 @@ class BaseDonnees:
         poids_att = corr_avc_cible.to_numpy()
         return poids_att
         
-
-
 
     def faire_ens_entr_test(self, prop_entr = 0.7):
         """
@@ -190,7 +201,7 @@ class BaseDonnees:
             x_test = bd_donnees[~masque].to_numpy()
             t_test = bd_cible[~masque].to_numpy()
             nb_leg = np.sum(t_entr)
-        print('Ensembles dentrainement et de test générés')
+        print("Ensembles d'entrainement et de test générés")
         return x_entr, t_entr, x_test, t_test
 
 
