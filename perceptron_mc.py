@@ -5,6 +5,26 @@ import numpy as np
 from tqdm import tqdm
 
 class PerceptronMC(Classifieur):
+    '''
+    Implémentation du modèle de perceptron multi-couches. Cette 
+    classe possède une initialisation, ainsi qu'une validation 
+    croisée qui lui est propre. 
+
+    L'initialisation prend en entrée les paramètres suivants :
+    -les couches cachées : nombre de neurones par couches
+                            (ex : 5,10,15,5)
+    -le type de fonction d'activation : identity, logistic, tanh, relu
+    -le solutionneur : lbfgs, sgd, adam
+    -le type de taux d'apprentissage : constant, invscaling, adaptive
+                            (seulement avec sgd)
+    -le maximum d'itérations
+
+    La validation croisée utilise le paramètre de régularisation
+    comme hyperparamètre, en plus d'être de type "k-fold".
+
+    Toutes les autres méthodes proviennent de la classe parent
+    Classifieur, qui se charge des méthodes générales.
+    '''
     def __init__(self, couches_cachees, activation = 'relu', solutionneur = 'sgd', apprentissage_type = 'constant', max_iter = 200):
         self.couches_cachees = couches_cachees
         self.activation = activation

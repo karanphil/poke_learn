@@ -40,7 +40,7 @@ class Classifieur:
         """   
         return np.sum((t-prediction)**2)
 
-    def validation_croisee(self, x_entr, t_entr, est_ech_poids = False, *args):
+    def validation_croisee(self, x_entr, t_entr, k = 10, est_ech_poids = False, *args):
         """
         Cette méthode utilise simplement la méthode ``entrainement()``, qui est le cas
         le plus général pour certains modèles. Des véritables validations croisées 

@@ -6,6 +6,24 @@ import numpy as np
 from tqdm import tqdm
 
 class AdaBoost(Classifieur):
+    '''
+    Implémentation du modèle de Adaboost. Cette 
+    classe possède une initialisation, ainsi qu'une validation 
+    croisée qui lui est propre. Prendre note que le modèle est 
+    initialisé avec un arbre décisionnel comme estimateur de base
+
+    L'initialisation prend en entrée les paramètres suivants :
+    -la profondeur maximale de l'arbre, un entier
+    -le nombre d'estimateurs, un entier    
+    -le taux d'apprentissage,
+
+    La validation croisée utilise le taux d'apprentissage et
+    le nombre d'estimateurs comme hyperparamètre, en plus 
+    d'être de type "k-fold".
+
+    Toutes les autres méthodes proviennent de la classe parent
+    Classifieur, qui se charge des méthodes générales.
+    '''
     def __init__(self, max_prof = 1, nb_estimateur = 50, lamb = 1.):
         self.max_prof = max_prof
         self.nb_estimateur = nb_estimateur
