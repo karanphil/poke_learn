@@ -16,12 +16,18 @@ def main():
     modele_choix = sys.argv[i]
 
     # Gestion des données
-    bd = BaseDonnees(fichier)
+    bd = BaseDonnees(fichier, 'is_legendary')
     liste_colonne = bd.voir_att()
-    #bd.enlever_attributs(liste_colonne[0:20])
     bd.enlever_attributs(['abilities', 'japanese_name', 'name', 'generation', 'pokedex_number', 'classfication'])
     bd.str_a_int(['capture_rate'])
     bd.str_a_vec(['type1', 'type2'])
+    bd.normaliser_donnees()
+    bd.methode_filtrage()
+    if(bool(est_ech_poids)):
+        poids = bd.definir_poids_att()
+    else:
+        poids = []
+
     x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
 
     # Gestion du modèle
@@ -54,10 +60,10 @@ def main():
     # Entrainement ou validation croisée
     if bool(vc) is False:
         print("Début de l'entrainement simple...")
-        modele.entrainement(x_entr, t_entr, est_ech_poids, []) # Il faudra fournir ech_poids de Gestion des données!!!
+        modele.entrainement(x_entr, t_entr, est_ech_poids, poids) # Il faudra fournir ech_poids de Gestion des données!!!
     else:
         print("Début de l'entrainement par validation croisée...")
-        modele.validation_croisee(x_entr, t_entr, 10, est_ech_poids, []) # Il faudra fournir ech_poids de Gestion des données!!!
+        modele.validation_croisee(x_entr, t_entr, 10, est_ech_poids, poids) # Il faudra fournir ech_poids de Gestion des données!!!
 
     # Prédiction et erreur
     print("Calcul des erreurs...")
