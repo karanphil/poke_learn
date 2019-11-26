@@ -5,8 +5,24 @@ import numpy as np
 from tqdm import tqdm
 
 class Perceptron(Classifieur):
-    def __init__(self):
-        self.modele = skPerceptron(penalty = 'l2', shuffle = False)
+    '''
+    Implémentation du modèle de perceptron. Cette classe possède
+    une initialisation, ainsi qu'une validation croisée qui lui est
+    propre. 
+
+    L'initialisation prend en entrée le nombre maximum d'itération
+    et le critère d'arrêt, facultatifs.
+
+    La validation croisée utilise le paramètre de régularisation
+    comme hyperparamètre, en plus d'être de type "k-fold".
+
+    Toutes les autres méthodes proviennent de la classe parent
+    Classifieur, qui se charge des méthodes générales.
+    '''
+    def __init__(self, max_iter = 1000, tol = 1e-3):
+        self.max_iter = max_iter
+        self.tol = tol
+        self.modele = skPerceptron(penalty = 'l2', max_iter = max_iter, tol = tol, shuffle = False)
 
     def validation_croisee(self, x_tab, t_tab, k = 10, est_ech_poids = False, *args):
         # Liste des lambda à explorer
@@ -21,7 +37,7 @@ class Perceptron(Classifieur):
 
         liste_erreur = np.zeros((len(liste_lamb)))
         for i in tqdm(range(len(liste_lamb))):
-            self.modele = skPerceptron(penalty = 'l2', alpha = liste_lamb[i], shuffle = False)
+            self.modele = skPerceptron(penalty = 'l2', alpha = liste_lamb[i], max_iter = self.max_iter, tol = self.tol, shuffle = False)
             for j in range(k):
                 # Masque de vrai ou de faux pour déterminer les ensembles D_valid et D_train
                 liste_ind = np.ones(nb_donnees, dtype = bool)
@@ -41,5 +57,5 @@ class Perceptron(Classifieur):
             liste_erreur[i] /= k
 
         meilleur_lambda = liste_lamb[np.unravel_index(np.argmin(liste_erreur), liste_erreur.shape)[0]]
-        self.modele = skPerceptron(penalty = 'l2', alpha = meilleur_lambda, shuffle = False)
+        self.modele = skPerceptron(penalty = 'l2', alpha = meilleur_lambda, max_iter = self.max_iter, tol = self.tol, shuffle = False)
         self.entrainement(x_tab, t_tab, est_ech_poids, args[0])
