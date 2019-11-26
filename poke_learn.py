@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import argparse
 from bayes_naif import BayesNaif
 from perceptron import Perceptron
 from perceptron_mc import PerceptronMC
@@ -7,6 +8,20 @@ from svm import SVM
 from fad import FAD
 from adaboost import AdaBoost
 from gestion_donnees import BaseDonnees
+
+def _build_args_parser():
+    p = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
+    p.add_argument('fichier',
+                    help='Nom du fichier de données.')
+    p.add_argument('vc',
+                    help='Choix de validation croisée ou pas.')
+    p.add_argument('est_ech_poids',
+                    help="Choix de poids d'échantillon ou pas.")
+    p.add_argument('choix_modele',
+                    help='Choix du modèle à utiliser.')
+
+    return p
 
 def main():
     fichier = sys.argv[1]
@@ -35,7 +50,7 @@ def main():
     if(modele_choix == "bayes_naif"):
         modele = BayesNaif()
     elif(modele_choix == "perceptron"):
-        modele = Perceptron()
+        modele = Perceptron(max_iter = 1000, tol = 1e-3)
     elif(modele_choix == "perceptron_mc"):
         couches_cachees = tuple([int(x) for x in sys.argv[i+1].split(',')])
         activation = sys.argv[i+2]
