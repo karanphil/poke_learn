@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, roc_curve
+from matplotlib import pyplot as plt
 
 class Analyse:
     def __init__(self, verite_terrain, resultats, probabilites):
@@ -11,6 +12,8 @@ class Analyse:
         self.vn = 0
         self.fp = 0
         self.fn = 0
+        self.tvp = None
+        self.tfp = None
 
     def calculer_comptes(self, est_ech_poids = False, *args):
         # Cas avec poids variables
@@ -38,5 +41,15 @@ class Analyse:
         precision = self.calculer_precision()
         return((2 * rappel * precision) / (rappel + precision))
 
-    def calculer_courbe_roc(self):
-        raise NotImplementedError
+    def calculer_courbe_roc(self, est_ech_poids = False, *args):
+        # Cas avec poids variables
+        if(est_ech_poids):
+            self.tfp, self.tvp, seuil = roc_curve(self.verite_terrain, self.probabilites, sample_weight = args[0]) 
+        # Cas sans poids variables
+        else:
+            self.tfp, self.tvp, seuil = roc_curve(self.verite_terrain, self.probabilites) 
+
+    def afficher_courbe_roc(self):
+        plt.figure()
+        plt.plot(self.tfp, self.tvp, "k-")
+        plt.show()
