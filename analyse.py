@@ -22,19 +22,21 @@ class Analyse:
         self.vn, self.fp, self.fn, self.vp = matrice_confusion.ravel()
     
     def calculer_rappel(self):
-        raise NotImplementedError
+        return(self.vp / (self.fn + self.vp))
 
     def calculer_justesse(self):
-        raise NotImplementedError
+        return((self.vp + self.vn) / (self.vp + self.vn + self.fp + self.fn))
 
     def calculer_precision(self):
-        raise NotImplementedError
+        return(self.vp / (self.vp + self.fp))
 
     def calculer_specificite(self):
-        raise NotImplementedError
+        return(self.vn / (self.fp + self.vn))
 
     def calculer_mesure_f(self):
-        raise NotImplementedError
+        rappel = self.calculer_rappel()
+        precision = self.calculer_precision()
+        return((2 * rappel * precision) / (rappel + precision))
 
     def calculer_courbe_roc(self):
         raise NotImplementedError
