@@ -48,6 +48,21 @@ class Classifieur:
         """
         self.entrainement(x_entr, t_entr, est_ech_poids, args[0])
 
+    def confiance_test(self, x):
+        """
+        Cette méthode renvoie le résultat de predict_proba ou decision_function,
+        dépendant du modèle utilisé.
+        """
+        try:
+            confiance = self.modele.predict_proba(x)
+        except AttributeError:
+            try:
+                confiance = self.modele.decision_function(x)
+            except AttributeError:
+                print("Le modèle ne possède pas cette fonction.")
+                confiance = None
+        return confiance
+
     def affichage(self, x_tab, t_tab):
         raise NotImplementedError
 
