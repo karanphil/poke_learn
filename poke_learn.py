@@ -8,6 +8,7 @@ from svm import SVM
 from fad import FAD
 from adaboost import AdaBoost
 from gestion_donnees import BaseDonnees
+from analyse import Analyse
 
 def _build_args_parser():
     p = argparse.ArgumentParser(
@@ -111,6 +112,12 @@ def main():
     print('Erreur test = ', erreur_test, '%')
 
     # Analyse des résultats
-
+    print("Analyse des résultats...")
+    prob = modele.confiance_test(x_test)
+    analyse = Analyse(t_test, predictions_test, prob)
+    analyse.calculer_comptes()
+    analyse.afficher_metriques()
+    analyse.calculer_courbe_roc()
+    analyse.afficher_courbe_roc()
 if __name__ == "__main__":
     main()
