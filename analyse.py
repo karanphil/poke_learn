@@ -40,6 +40,18 @@ class Analyse:
         rappel = self.calculer_rappel()
         precision = self.calculer_precision()
         return((2 * rappel * precision) / (rappel + precision))
+    
+    def afficher_metriques(self):
+        rappel = self.calculer_rappel()
+        justesse = self.calculer_justesse()
+        precision = self.calculer_precision()
+        specificite = self.calculer_specificite()
+        mesure_f = self.calculer_mesure_f()
+        print("Rappel = ", rappel)
+        print("Justesse = ", justesse)
+        print("Précision = ", precision)
+        print("Spécificité = ", specificite)
+        print("Mesure-f = ", mesure_f)
 
     def calculer_courbe_roc(self, est_ech_poids = False, *args):
         # Cas avec poids variables
