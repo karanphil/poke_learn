@@ -26,7 +26,7 @@ def _build_args_parser():
                     help="Critère de tolérance (perceptron).")
     p.add_argument("--max_iter_perceptron", type=int, default=1000,
                     help="Maximum d'itérations (perceptron).")
-    p.add_argument("--couches_cachees", type=str, default=(2,5,2),
+    p.add_argument("--couches_cachees", type=str, default="2,5,2",
                     help="Nombre de neurones par couches (perceptron_mc).")
     p.add_argument("--activation", type=str, default="relu", 
                     choices=["identity","logistic","tanh","relu"],
