@@ -56,12 +56,15 @@ class Analyse:
     def calculer_courbe_roc(self, est_ech_poids = False, *args):
         # Cas avec poids variables
         if(est_ech_poids):
-            self.tfp, self.tvp, seuil = roc_curve(self.verite_terrain, self.probabilites, sample_weight = args[0]) 
+            self.tfp, self.tvp, seuil = roc_curve(self.verite_terrain, self.probabilites, sample_weight = args[0], drop_intermediate = False) 
         # Cas sans poids variables
         else:
-            self.tfp, self.tvp, seuil = roc_curve(self.verite_terrain, self.probabilites) 
+            self.tfp, self.tvp, seuil = roc_curve(self.verite_terrain, self.probabilites, drop_intermediate = False) 
 
     def afficher_courbe_roc(self):
         plt.figure()
-        plt.plot(self.tfp, self.tvp, "k-")
+        plt.title("Courbe ROC")
+        plt.xlabel("TFP")
+        plt.ylabel("TVP")
+        plt.plot(self.tfp, self.tvp, "b-")
         plt.show()
