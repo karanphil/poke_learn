@@ -162,19 +162,15 @@ class BaseDonnees:
             print('Attributs très corrélés enlevés')
 
 
-    def definir_poids_att(self):
+    def definir_poids_ech(self):
         """
-        Retourne un vecteur de poids entre 0 et 1 de chacun des attributs
-        selon le coefficient de corrélation entre les attributs et l'attribut cible
+        Retourne un vecteur de poids entre 0 et 1 de chacun des échantillons
 
         Cette méthode suppose que toutes les données sont de types numériques
         Sinon, appelez la méthode str_a_vec avec le nom des attributs qui ne sont
         pas en valeurs numériques.
         """
-        corr_avc_cible = abs(self.calculer_cc()[self.att_cible])
-        corr_avc_cible.drop(self.att_cible, inplace=True)
-        poids_att = corr_avc_cible.to_numpy()
-        return poids_att
+        raise NotImplementedError
         
 
     def faire_ens_entr_test(self, prop_entr = 0.7):
