@@ -24,6 +24,12 @@ class Analyse:
             matrice_confusion = confusion_matrix(self.verite_terrain, self.resultats)
         self.vn, self.fp, self.fn, self.vp = matrice_confusion.ravel()
     
+    def afficher_comptes(self):
+        print("Vrais positifs : ", self.vp)
+        print("Faux positifs : ", self.fp)
+        print("Vrais négatifs : ", self.vn)
+        print("Faux négatifs : ", self.fn)
+
     def calculer_rappel(self):
         return(self.vp / (self.fn + self.vp))
 

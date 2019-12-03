@@ -116,6 +116,7 @@ def main():
     prob = modele.confiance_test(x_test)
     analyse = Analyse(t_test, predictions_test, prob)
     analyse.calculer_comptes()
+    analyse.afficher_comptes()
     analyse.afficher_metriques()
     analyse.calculer_courbe_roc()
     analyse.afficher_courbe_roc()
