@@ -8,6 +8,7 @@ from svm import SVM
 from fad import FAD
 from adaboost import AdaBoost
 from gestion_donnees import BaseDonnees
+from analyse import Analyse
 
 def _build_args_parser():
     p = argparse.ArgumentParser(
@@ -59,7 +60,7 @@ def main():
     parser = _build_args_parser()
     args = parser.parse_args()
 
-    # Gestion des données
+    #-------------------Gestion des données--------------------------
     bd = BaseDonnees(args.fichier, 'is_legendary')
     liste_colonne = bd.voir_att()
     bd.enlever_attributs(['abilities', 'japanese_name', 'name', 'generation', 'pokedex_number', 'classfication'])
@@ -74,8 +75,8 @@ def main():
 
     x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
 
-    # Gestion du modèle
-    print("Création du mondèle...")
+    #-------------------Gestion du modèle----------------------------
+    print("Création du modèle...")
     if(args.choix_modele == "bayes_naif"):
         modele = BayesNaif()
     elif(args.choix_modele == "perceptron"):
@@ -91,15 +92,15 @@ def main():
     elif(args.choix_modele == "adaboost"):
         modele = AdaBoost(max_prof = args.prof_max_adaboost)
 
-    # Entrainement ou validation croisée
+    #-------------------Entrainement ou validation croisée-----------
     if bool(args.vc) is False:
         print("Début de l'entrainement simple...")
-        modele.entrainement(x_entr, t_entr, args.est_ech_poids, poids) # Il faudra fournir ech_poids de Gestion des données!!!
+        modele.entrainement(x_entr, t_entr, args.est_ech_poids, poids) 
     else:
         print("Début de l'entrainement par validation croisée...")
-        modele.validation_croisee(x_entr, t_entr, 10, args.est_ech_poids, poids) # Il faudra fournir ech_poids de Gestion des données!!!
+        modele.validation_croisee(x_entr, t_entr, 10, args.est_ech_poids, poids)
 
-    # Prédiction et erreur
+    #-------------------Prédiction et erreur-------------------------
     print("Calcul des erreurs...")
     predictions_entrainement = modele.prediction(x_entr)
     erreur_entrainement = modele.erreur(t_entr, predictions_entrainement) / len(t_entr) * 100
@@ -110,7 +111,15 @@ def main():
     print('Erreur train = ', erreur_entrainement, '%')
     print('Erreur test = ', erreur_test, '%')
 
-    # Analyse des résultats
-
+    #-------------------Analyse des résultats------------------------
+    print("Analyse des résultats...")
+    prob = modele.confiance_test(x_test)
+    analyse = Analyse(t_test, predictions_test, prob)
+    analyse.calculer_comptes()
+    analyse.afficher_comptes()
+    analyse.afficher_metriques()
+    analyse.calculer_courbe_roc()
+    analyse.afficher_courbe_roc()
+    
 if __name__ == "__main__":
     main()

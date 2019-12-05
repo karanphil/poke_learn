@@ -54,7 +54,7 @@ class Classifieur:
         dépendant du modèle utilisé.
         """
         try:
-            confiance = self.modele.predict_proba(x)
+            confiance = self.modele.predict_proba(x).T[1]
         except AttributeError:
             try:
                 confiance = self.modele.decision_function(x)
