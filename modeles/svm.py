@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from classifieur import Classifieur
+from .classifieur import Classifieur
 from sklearn.svm import SVC
 import numpy as np
 from tqdm import tqdm

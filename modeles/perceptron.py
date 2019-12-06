@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from classifieur import Classifieur
+from .classifieur import Classifieur
 from sklearn.linear_model import Perceptron as skPerceptron
 import numpy as np
 from tqdm import tqdm

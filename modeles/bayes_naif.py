@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from classifieur import Classifieur
+from .classifieur import Classifieur
 from sklearn.naive_bayes import GaussianNB
 
 class BayesNaif(Classifieur):

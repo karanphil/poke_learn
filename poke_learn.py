@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import sys
 import argparse
-from bayes_naif import BayesNaif
-from perceptron import Perceptron
-from perceptron_mc import PerceptronMC
-from svm import SVM
-from fad import FAD
-from adaboost import AdaBoost
+from modeles.bayes_naif import BayesNaif
+from modeles.perceptron import Perceptron
+from modeles.perceptron_mc import PerceptronMC
+from modeles.svm import SVM
+from modeles.fad import FAD
+from modeles.adaboost import AdaBoost
 from gestion_donnees import BaseDonnees
 from analyse import Analyse
 

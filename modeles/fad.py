@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from classifieur import Classifieur
+from .classifieur import Classifieur
 from sklearn.ensemble import RandomForestClassifier
 
 class FAD(Classifieur):
