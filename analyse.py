@@ -132,7 +132,7 @@ class Analyse:
         Cette méthode sert à afficher le résultat de la méthode
         calculer_courbe_roc.
         """
-        plot_init()
+        graph_init()
         plt.figure()
         #plt.title("Courbe ROC")
         plt.xlabel("TFP")
@@ -143,6 +143,15 @@ class Analyse:
 
 class Analyse_multiple:
     def __init__(self, repetitions):
+        """
+        Classe servant à faire l'analyse des résultats de 
+        l'entraînement d'un modèle, à la suite de plusieurs 
+        répétitions. Elle sert à compléter la classe Analyse
+        en calculant les moyennes des métriques et en affichant
+        l'évolution de celles-ci au cours des répétitions.
+
+        Prend en entrée le nombre de répétitions choisi.
+        """ 
         self.repetitions = repetitions
         self.erreurs = np.ndarray((repetitions, 2))
         self.metriques = np.ndarray((repetitions, 5))
@@ -151,19 +160,40 @@ class Analyse_multiple:
         self.rep_courante = 0
 
     def ajouter_erreurs(self, erreur_ent, erreur_test):
+        """
+        Cette méthode ajoute les erreurs d'une répétition au
+        tableau des erreurs.
+        """
         self.erreurs[self.rep_courante] = [erreur_ent, erreur_test]
 
     def ajouter_metriques(self, metriques):
+        """
+        Cette méthode ajoute les métriques d'une répétition
+        au tableau des métriques.
+        """
         self.metriques[self.rep_courante] = metriques
 
     def calculer_moyennes(self):
+        """
+        Cette méthode calculer les moyennes des erreurs
+        et des métriques, idéalement à la fin des répétitions
+        """
         self.erreurs_moy = np.mean(self.erreurs, axis = 0)
         self.metriques_moy = np.mean(self.metriques, axis = 0)
     
     def augmenter_rep_courante(self):
+        """
+        Cette méthode sert à mettre à jour l'itérateur 
+        self.rep_courante pour savoir à quelle répétition
+        le code est rendu.
+        """
         self.rep_courante += 1
 
     def afficher_moyennes(self):
+        """
+        Cette méthode sert à afficher au terminal
+        toutes les moyennes calculées précédemment.
+        """
         print("Erreur d'entrainement moyenne = ", self.erreurs_moy[0], '%')
         print("Erreur de test moyenne = ", self.erreurs_moy[1], '%')
         print("Rappel moyen = ", self.metriques_moy[0])
@@ -173,9 +203,13 @@ class Analyse_multiple:
         print("Mesure-f moyenne = ", self.metriques_moy[4])
 
     def afficher_graphique(self):
+        """
+        Cette méthode sert à afficher sous forme de graphique
+        les résultats compilés au fil des répétitions.
+        """
         rep = np.arange(1, self.repetitions + 1, 1)
         fig = plt.figure(figsize=(15,15))
-        plot_init()
+        graph_init()
         widths = [2]
         heights = [1,1]
         gs = gridspec.GridSpec(2, 1, figure = fig, width_ratios=widths,
@@ -183,8 +217,10 @@ class Analyse_multiple:
         ax = fig.add_subplot(gs[0, 0])
         ax.plot(rep, 100 - self.erreurs[:, 0], "bs-", label = "Entrainement")
         ax.plot(rep, 100 - self.erreurs[:, 1], "gs-", label = "Test")
-        ax.axhline(100 - self.erreurs_moy[0], color = "b", linestyle = "--", alpha = 0.3, linewidth = 1.5)
-        ax.axhline(100 - self.erreurs_moy[1], color = "g", linestyle = "--", alpha = 0.3, linewidth = 1.5)
+        ax.axhline(100 - self.erreurs_moy[0], color = "b", 
+                    linestyle = "--", alpha = 0.3, linewidth = 1.5)
+        ax.axhline(100 - self.erreurs_moy[1], color = "g", 
+                    linestyle = "--", alpha = 0.3, linewidth = 1.5)
         plt.ylabel("Justesse en %")
         plt.legend(loc = 1)
         plt.xticks(rep)
@@ -200,7 +236,11 @@ class Analyse_multiple:
         plt.legend(loc = 1)
         plt.show()
 
-def plot_init():
+def graph_init():
+    """
+    Cette méthode à part sert à initialiser les 
+    paramètres d'un graphique.
+    """
     plt.style.use('seaborn-notebook')
     plt.rcParams['axes.grid'] = True
     plt.rcParams['grid.color'] = "darkgrey"
