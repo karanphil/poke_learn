@@ -134,8 +134,9 @@ def main():
             analyse.calculer_courbe_roc()
             analyse.afficher_courbe_roc()
 
-        analyse_mult.ajouter_erreurs(erreur_entrainement, erreur_test, rep)
-        analyse_mult.ajouter_metriques(analyse.metriques, rep)
+        analyse_mult.ajouter_erreurs(erreur_entrainement, erreur_test)
+        analyse_mult.ajouter_metriques(analyse.metriques)
+        analyse_mult.augmenter_rep_courante()
 
     #-------------------Analyse des répétitions------------------------
     if(args.repetitions > 1):

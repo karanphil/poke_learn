@@ -148,16 +148,20 @@ class Analyse_multiple:
         self.metriques = np.ndarray((repetitions, 5))
         self.erreurs_moy = np.array([0,0])
         self.metriques_moy = np.array([0,0,0,0,0])
+        self.rep_courante = 0
 
-    def ajouter_erreurs(self, erreur_ent, erreur_test, rep):
-        self.erreurs[rep] = [erreur_ent, erreur_test]
+    def ajouter_erreurs(self, erreur_ent, erreur_test):
+        self.erreurs[self.rep_courante] = [erreur_ent, erreur_test]
 
-    def ajouter_metriques(self, metriques, rep):
-        self.metriques[rep] = metriques
+    def ajouter_metriques(self, metriques):
+        self.metriques[self.rep_courante] = metriques
 
     def calculer_moyennes(self):
         self.erreurs_moy = np.mean(self.erreurs, axis = 0)
         self.metriques_moy = np.mean(self.metriques, axis = 0)
+    
+    def augmenter_rep_courante(self):
+        self.rep_courante += 1
 
     def afficher_moyennes(self):
         print("Erreur d'entrainement moyenne = ", self.erreurs_moy[0], '%')
