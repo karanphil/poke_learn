@@ -2,6 +2,7 @@
 import numpy as np
 from sklearn.metrics import confusion_matrix, roc_curve
 from matplotlib import pyplot as plt
+import matplotlib.gridspec as gridspec
 
 class Analyse:
     def __init__(self, verite_terrain, resultats, probabilites):
@@ -131,8 +132,9 @@ class Analyse:
         Cette méthode sert à afficher le résultat de la méthode
         calculer_courbe_roc.
         """
+        plot_init()
         plt.figure()
-        plt.title("Courbe ROC")
+        #plt.title("Courbe ROC")
         plt.xlabel("TFP")
         plt.ylabel("TVP")
         plt.plot(self.tfp, self.tvp, "b-")
@@ -142,11 +144,72 @@ class Analyse:
 class Analyse_multiple:
     def __init__(self, repetitions):
         self.repetitions = repetitions
-        self.erreurs = np.ndarray((2, repetitions))
-        self.metriques = np.ndarray((5, repetitions))
+        self.erreurs = np.ndarray((repetitions, 2))
+        self.metriques = np.ndarray((repetitions, 5))
+        self.erreurs_moy = np.array([0,0])
+        self.metriques_moy = np.array([0,0,0,0,0])
 
-    def ajouter_erreurs(self, erreur_ent, erreur_test):
-        return 0
+    def ajouter_erreurs(self, erreur_ent, erreur_test, rep):
+        self.erreurs[rep] = [erreur_ent, erreur_test]
+
+    def ajouter_metriques(self, metriques, rep):
+        self.metriques[rep] = metriques
 
     def calculer_moyennes(self):
-        return 0
+        self.erreurs_moy = np.mean(self.erreurs, axis = 0)
+        self.metriques_moy = np.mean(self.metriques, axis = 0)
+
+    def afficher_moyennes(self):
+        print("Erreur d'entrainement moyenne = ", self.erreurs_moy[0], '%')
+        print("Erreur de test moyenne = ", self.erreurs_moy[1], '%')
+        print("Rappel moyen = ", self.metriques_moy[0])
+        print("Justesse moyenne = ", self.metriques_moy[1])
+        print("Précision moyenne = ", self.metriques_moy[2])
+        print("Spécificité moyenne = ", self.metriques_moy[3])
+        print("Mesure-f moyenne = ", self.metriques_moy[4])
+
+    def afficher_graphique(self):
+        rep = np.arange(1, self.repetitions + 1, 1)
+        fig = plt.figure(figsize=(15,15))
+        plot_init()
+        widths = [2]
+        heights = [1,1]
+        gs = gridspec.GridSpec(2, 1, figure = fig, width_ratios=widths,
+                          height_ratios=heights)
+        ax = fig.add_subplot(gs[0, 0])
+        ax.plot(rep, 100 - self.erreurs[:, 0], "bs-", label = "Entrainement")
+        ax.plot(rep, 100 - self.erreurs[:, 1], "gs-", label = "Test")
+        ax.axhline(100 - self.erreurs_moy[0], color = "b", linestyle = "--", alpha = 0.3, linewidth = 1.5)
+        ax.axhline(100 - self.erreurs_moy[1], color = "g", linestyle = "--", alpha = 0.3, linewidth = 1.5)
+        plt.ylabel("Justesse en %")
+        plt.legend(loc = 1)
+        plt.xticks(rep)
+        ax = fig.add_subplot(gs[1, 0])
+        ax.plot(rep, self.metriques[:, 0] * 100, "ro-", label = "Rappel")
+        #plt.plot(rep, self.metriques[:, 1] * 100, "o-", label = "Justesse")
+        ax.plot(rep, self.metriques[:, 2] * 100, "co-", label = "Précision")
+        ax.plot(rep, self.metriques[:, 3] * 100, "yo-", label = "Spécificité")
+        #plt.plot(rep, self.metriques[:, 4] * 100, "o-", label = "Mesure-f")
+        plt.ylabel("Métriques en %")
+        plt.xlabel("# de répétition")
+        plt.xticks(rep)
+        plt.legend(loc = 1)
+        plt.show()
+
+def plot_init():
+    plt.style.use('seaborn-notebook')
+    plt.rcParams['axes.grid'] = True
+    plt.rcParams['grid.color'] = "darkgrey"
+    plt.rcParams['grid.linewidth'] = 1
+    plt.rcParams['grid.linestyle'] = "-"
+    plt.rcParams['grid.alpha'] = "0.5"
+    plt.rcParams['figure.figsize'] = (13.0, 9.0)
+    plt.rcParams['font.size'] = 15
+    plt.rcParams['axes.labelsize'] = plt.rcParams['font.size']
+    plt.rcParams['axes.titlesize'] = 1*plt.rcParams['font.size']
+    plt.rcParams['legend.fontsize'] = plt.rcParams['font.size']
+    plt.rcParams['xtick.labelsize'] = 0.9*plt.rcParams['font.size']
+    plt.rcParams['ytick.labelsize'] = 0.9*plt.rcParams['font.size']
+    plt.rcParams['axes.linewidth'] =1
+    plt.rcParams['lines.linewidth']=2
+    plt.rcParams['lines.markersize']=8

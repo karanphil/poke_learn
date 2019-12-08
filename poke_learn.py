@@ -97,7 +97,7 @@ def main():
     #-------------------Répétitions pour moyenner-----------
     analyse_mult = Analyse_multiple(args.repetitions)
 
-    for i in range(args.repetitions):
+    for rep in range(args.repetitions):
         x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
 
         #-------------------Entrainement ou validation croisée-----------
@@ -116,8 +116,8 @@ def main():
         predictions_test = modele.prediction(x_test)
         erreur_test = modele.erreur(t_test, predictions_test) / len(t_test) * 100
 
-        print('Erreur train = ', erreur_entrainement, '%')
-        print('Erreur test = ', erreur_test, '%')
+        print("Erreur d'entrainement = ", erreur_entrainement, '%')
+        print("Erreur de test = ", erreur_test, '%')
 
         #-------------------Analyse des résultats------------------------
         print("Analyse des résultats...")
@@ -128,7 +128,15 @@ def main():
         analyse.calculer_metriques()
         analyse.afficher_metriques()
         analyse.calculer_courbe_roc()
-        analyse.afficher_courbe_roc()
+        #analyse.afficher_courbe_roc()
+
+        analyse_mult.ajouter_erreurs(erreur_entrainement, erreur_test, rep)
+        analyse_mult.ajouter_metriques(analyse.metriques, rep)
+
+    if(args.repetitions > 1):
+        analyse_mult.calculer_moyennes()
+        analyse_mult.afficher_moyennes()
+        analyse_mult.afficher_graphique()
     
 if __name__ == "__main__":
     main()
