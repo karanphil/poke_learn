@@ -2,6 +2,7 @@
 import numpy as np
 from sklearn.metrics import confusion_matrix, roc_curve
 from matplotlib import pyplot as plt
+import matplotlib.gridspec as gridspec
 
 class Analyse:
     def __init__(self, verite_terrain, resultats, probabilites):
@@ -26,6 +27,7 @@ class Analyse:
         self.fn = 0
         self.tvp = None
         self.tfp = None
+        self.metriques = np.zeros(5)
 
     def calculer_comptes(self, est_ech_poids = False, *args):
         """
@@ -86,21 +88,27 @@ class Analyse:
         precision = self.calculer_precision()
         return((2 * rappel * precision) / (rappel + precision))
     
+    def calculer_metriques(self):
+        """
+        Cette méthode sert à calculer les  différentes
+        métriques en utilisant les méthodes précédentes.
+        """
+        self.metriques[0] = self.calculer_rappel()
+        self.metriques[1] = self.calculer_justesse()
+        self.metriques[2] = self.calculer_precision()
+        self.metriques[3] = self.calculer_specificite()
+        self.metriques[4] = self.calculer_mesure_f()
+
     def afficher_metriques(self):
         """
-        Cette méthode sert à afficher les résultats des
-        méthodes précédentes qui calculent les métriques.
+        Cette méthode sert à afficher les résultats de
+        la méthode calculer_metriques.
         """
-        rappel = self.calculer_rappel()
-        justesse = self.calculer_justesse()
-        precision = self.calculer_precision()
-        specificite = self.calculer_specificite()
-        mesure_f = self.calculer_mesure_f()
-        print("Rappel = ", rappel)
-        print("Justesse = ", justesse)
-        print("Précision = ", precision)
-        print("Spécificité = ", specificite)
-        print("Mesure-f = ", mesure_f)
+        print("Rappel = ", self.metriques[0])
+        print("Justesse = ", self.metriques[1])
+        print("Précision = ", self.metriques[2])
+        print("Spécificité = ", self.metriques[3])
+        print("Mesure-f = ", self.metriques[4])
 
     def calculer_courbe_roc(self, est_ech_poids = False, *args):
         """
@@ -124,9 +132,128 @@ class Analyse:
         Cette méthode sert à afficher le résultat de la méthode
         calculer_courbe_roc.
         """
+        graph_init()
         plt.figure()
-        plt.title("Courbe ROC")
+        #plt.title("Courbe ROC")
         plt.xlabel("TFP")
         plt.ylabel("TVP")
         plt.plot(self.tfp, self.tvp, "b-")
         plt.show()
+
+
+class Analyse_multiple:
+    def __init__(self, repetitions):
+        """
+        Classe servant à faire l'analyse des résultats de 
+        l'entraînement d'un modèle, à la suite de plusieurs 
+        répétitions. Elle sert à compléter la classe Analyse
+        en calculant les moyennes des métriques et en affichant
+        l'évolution de celles-ci au cours des répétitions.
+
+        Prend en entrée le nombre de répétitions choisi.
+        """ 
+        self.repetitions = repetitions
+        self.erreurs = np.ndarray((repetitions, 2))
+        self.metriques = np.ndarray((repetitions, 5))
+        self.erreurs_moy = np.array([0,0])
+        self.metriques_moy = np.array([0,0,0,0,0])
+        self.rep_courante = 0
+
+    def ajouter_erreurs(self, erreur_ent, erreur_test):
+        """
+        Cette méthode ajoute les erreurs d'une répétition au
+        tableau des erreurs.
+        """
+        self.erreurs[self.rep_courante] = [erreur_ent, erreur_test]
+
+    def ajouter_metriques(self, metriques):
+        """
+        Cette méthode ajoute les métriques d'une répétition
+        au tableau des métriques.
+        """
+        self.metriques[self.rep_courante] = metriques
+
+    def calculer_moyennes(self):
+        """
+        Cette méthode calculer les moyennes des erreurs
+        et des métriques, idéalement à la fin des répétitions
+        """
+        self.erreurs_moy = np.mean(self.erreurs, axis = 0)
+        self.metriques_moy = np.mean(self.metriques, axis = 0)
+    
+    def augmenter_rep_courante(self):
+        """
+        Cette méthode sert à mettre à jour l'itérateur 
+        self.rep_courante pour savoir à quelle répétition
+        le code est rendu.
+        """
+        self.rep_courante += 1
+
+    def afficher_moyennes(self):
+        """
+        Cette méthode sert à afficher au terminal
+        toutes les moyennes calculées précédemment.
+        """
+        print("Erreur d'entrainement moyenne = ", self.erreurs_moy[0], '%')
+        print("Erreur de test moyenne = ", self.erreurs_moy[1], '%')
+        print("Rappel moyen = ", self.metriques_moy[0])
+        print("Justesse moyenne = ", self.metriques_moy[1])
+        print("Précision moyenne = ", self.metriques_moy[2])
+        print("Spécificité moyenne = ", self.metriques_moy[3])
+        print("Mesure-f moyenne = ", self.metriques_moy[4])
+
+    def afficher_graphique(self):
+        """
+        Cette méthode sert à afficher sous forme de graphique
+        les résultats compilés au fil des répétitions.
+        """
+        rep = np.arange(1, self.repetitions + 1, 1)
+        fig = plt.figure(figsize=(15,15))
+        graph_init()
+        widths = [2]
+        heights = [1,1]
+        gs = gridspec.GridSpec(2, 1, figure = fig, width_ratios=widths,
+                          height_ratios=heights)
+        ax = fig.add_subplot(gs[0, 0])
+        ax.plot(rep, 100 - self.erreurs[:, 0], "bs-", label = "Entrainement")
+        ax.plot(rep, 100 - self.erreurs[:, 1], "gs-", label = "Test")
+        ax.axhline(100 - self.erreurs_moy[0], color = "b", 
+                    linestyle = "--", alpha = 0.3, linewidth = 1.5)
+        ax.axhline(100 - self.erreurs_moy[1], color = "g", 
+                    linestyle = "--", alpha = 0.3, linewidth = 1.5)
+        plt.ylabel("Justesse en %")
+        plt.legend(loc = 1)
+        plt.xticks(rep)
+        ax = fig.add_subplot(gs[1, 0])
+        ax.plot(rep, self.metriques[:, 0] * 100, "ro-", label = "Rappel")
+        #plt.plot(rep, self.metriques[:, 1] * 100, "o-", label = "Justesse")
+        ax.plot(rep, self.metriques[:, 2] * 100, "co-", label = "Précision")
+        ax.plot(rep, self.metriques[:, 3] * 100, "yo-", label = "Spécificité")
+        #plt.plot(rep, self.metriques[:, 4] * 100, "o-", label = "Mesure-f")
+        plt.ylabel("Métriques en %")
+        plt.xlabel("# de répétition")
+        plt.xticks(rep)
+        plt.legend(loc = 1)
+        plt.show()
+
+def graph_init():
+    """
+    Cette méthode à part sert à initialiser les 
+    paramètres d'un graphique.
+    """
+    plt.style.use('seaborn-notebook')
+    plt.rcParams['axes.grid'] = True
+    plt.rcParams['grid.color'] = "darkgrey"
+    plt.rcParams['grid.linewidth'] = 1
+    plt.rcParams['grid.linestyle'] = "-"
+    plt.rcParams['grid.alpha'] = "0.5"
+    plt.rcParams['figure.figsize'] = (13.0, 9.0)
+    plt.rcParams['font.size'] = 15
+    plt.rcParams['axes.labelsize'] = plt.rcParams['font.size']
+    plt.rcParams['axes.titlesize'] = 1*plt.rcParams['font.size']
+    plt.rcParams['legend.fontsize'] = plt.rcParams['font.size']
+    plt.rcParams['xtick.labelsize'] = 0.9*plt.rcParams['font.size']
+    plt.rcParams['ytick.labelsize'] = 0.9*plt.rcParams['font.size']
+    plt.rcParams['axes.linewidth'] =1
+    plt.rcParams['lines.linewidth']=2
+    plt.rcParams['lines.markersize']=8

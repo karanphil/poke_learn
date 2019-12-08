@@ -8,7 +8,7 @@ from modeles.svm import SVM
 from modeles.fad import FAD
 from modeles.adaboost import AdaBoost
 from gestion_donnees import BaseDonnees
-from analyse import Analyse
+from analyse import Analyse, Analyse_multiple
 
 def _build_args_parser():
     p = argparse.ArgumentParser(
@@ -17,12 +17,18 @@ def _build_args_parser():
                     help="Nom du fichier de données.")
     p.add_argument("vc", type=int, choices=[0,1],
                     help="Choix de validation croisée ou pas.")
-    p.add_argument("est_ech_poids", type=int, choices=[0,1],
-                    help="Choix de poids d'échantillon ou pas.")
     p.add_argument("choix_modele", type=str, 
                     choices=["bayes_naif","perceptron",
                     "perceptron_mc","svm","fad","adaboost"],
                     help="Choix du modèle à utiliser.")
+    p.add_argument("--repetitions", type=int, default=1,
+                    help="Nombre de répétitions à faire pour moyenner.")
+    p.add_argument("--courbe_roc", type=int, default=0,
+                    choices=[0,1],
+                    help="Choix de courbe ROC ou pas.")
+    p.add_argument("--est_ech_poids", type=int, default=0,
+                    choices=[0,1],
+                    help="Choix de poids d'échantillon ou pas.")
     p.add_argument("--tol_perceptron", type=float, default=1e-3,
                     help="Critère de tolérance (perceptron).")
     p.add_argument("--max_iter_perceptron", type=int, default=1000,
@@ -73,8 +79,6 @@ def main():
     else:
         poids = []
 
-    x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
-
     #-------------------Gestion du modèle----------------------------
     print("Création du modèle...")
     if(args.choix_modele == "bayes_naif"):
@@ -92,34 +96,54 @@ def main():
     elif(args.choix_modele == "adaboost"):
         modele = AdaBoost(max_prof = args.prof_max_adaboost)
 
-    #-------------------Entrainement ou validation croisée-----------
-    if bool(args.vc) is False:
-        print("Début de l'entrainement simple...")
-        modele.entrainement(x_entr, t_entr, args.est_ech_poids, poids) 
-    else:
-        print("Début de l'entrainement par validation croisée...")
-        modele.validation_croisee(x_entr, t_entr, 10, args.est_ech_poids, poids)
 
-    #-------------------Prédiction et erreur-------------------------
-    print("Calcul des erreurs...")
-    predictions_entrainement = modele.prediction(x_entr)
-    erreur_entrainement = modele.erreur(t_entr, predictions_entrainement) / len(t_entr) * 100
+    #-------------------Répétitions pour moyenner-----------
+    analyse_mult = Analyse_multiple(args.repetitions)
 
-    predictions_test = modele.prediction(x_test)
-    erreur_test = modele.erreur(t_test, predictions_test) / len(t_test) * 100
+    for rep in range(args.repetitions):
+        x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
 
-    print('Erreur train = ', erreur_entrainement, '%')
-    print('Erreur test = ', erreur_test, '%')
+        #-------------------Entrainement ou validation croisée-----------
+        if bool(args.vc) is False:
+            print("Début de l'entrainement simple...")
+            modele.entrainement(x_entr, t_entr, args.est_ech_poids, poids) 
+        else:
+            print("Début de l'entrainement par validation croisée...")
+            modele.validation_croisee(x_entr, t_entr, 10, args.est_ech_poids, poids)
 
-    #-------------------Analyse des résultats------------------------
-    print("Analyse des résultats...")
-    prob = modele.confiance_test(x_test)
-    analyse = Analyse(t_test, predictions_test, prob)
-    analyse.calculer_comptes()
-    analyse.afficher_comptes()
-    analyse.afficher_metriques()
-    analyse.calculer_courbe_roc()
-    analyse.afficher_courbe_roc()
+        #-------------------Prédiction et erreur-------------------------
+        print("Calcul des erreurs...")
+        predictions_entrainement = modele.prediction(x_entr)
+        erreur_entrainement = modele.erreur(t_entr, predictions_entrainement) / len(t_entr) * 100
+
+        predictions_test = modele.prediction(x_test)
+        erreur_test = modele.erreur(t_test, predictions_test) / len(t_test) * 100
+
+        print("Erreur d'entrainement = ", erreur_entrainement, '%')
+        print("Erreur de test = ", erreur_test, '%')
+
+        #-------------------Analyse des résultats------------------------
+        print("Analyse des résultats...")
+        prob = modele.confiance_test(x_test)
+        analyse = Analyse(t_test, predictions_test, prob)
+        analyse.calculer_comptes()
+        analyse.afficher_comptes()
+        analyse.calculer_metriques()
+        analyse.afficher_metriques()
+        if(bool(args.courbe_roc)):
+            analyse.calculer_courbe_roc()
+            analyse.afficher_courbe_roc()
+
+        analyse_mult.ajouter_erreurs(erreur_entrainement, erreur_test)
+        analyse_mult.ajouter_metriques(analyse.metriques)
+        analyse_mult.augmenter_rep_courante()
+
+    #-------------------Analyse des répétitions------------------------
+    if(args.repetitions > 1):
+        print("Analyse des répétitions...")
+        analyse_mult.calculer_moyennes()
+        analyse_mult.afficher_moyennes()
+        analyse_mult.afficher_graphique()
     
 if __name__ == "__main__":
     main()
