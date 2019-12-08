@@ -26,6 +26,7 @@ class Analyse:
         self.fn = 0
         self.tvp = None
         self.tfp = None
+        self.metriques = np.zeros(5)
 
     def calculer_comptes(self, est_ech_poids = False, *args):
         """
@@ -86,21 +87,27 @@ class Analyse:
         precision = self.calculer_precision()
         return((2 * rappel * precision) / (rappel + precision))
     
+    def calculer_metriques(self):
+        """
+        Cette méthode sert à calculer les  différentes
+        métriques en utilisant les méthodes précédentes.
+        """
+        self.metriques[0] = self.calculer_rappel()
+        self.metriques[1] = self.calculer_justesse()
+        self.metriques[2] = self.calculer_precision()
+        self.metriques[3] = self.calculer_specificite()
+        self.metriques[4] = self.calculer_mesure_f()
+
     def afficher_metriques(self):
         """
-        Cette méthode sert à afficher les résultats des
-        méthodes précédentes qui calculent les métriques.
+        Cette méthode sert à afficher les résultats de
+        la méthode calculer_metriques.
         """
-        rappel = self.calculer_rappel()
-        justesse = self.calculer_justesse()
-        precision = self.calculer_precision()
-        specificite = self.calculer_specificite()
-        mesure_f = self.calculer_mesure_f()
-        print("Rappel = ", rappel)
-        print("Justesse = ", justesse)
-        print("Précision = ", precision)
-        print("Spécificité = ", specificite)
-        print("Mesure-f = ", mesure_f)
+        print("Rappel = ", self.metriques[0])
+        print("Justesse = ", self.metriques[1])
+        print("Précision = ", self.metriques[2])
+        print("Spécificité = ", self.metriques[3])
+        print("Mesure-f = ", self.metriques[4])
 
     def calculer_courbe_roc(self, est_ech_poids = False, *args):
         """

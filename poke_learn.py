@@ -96,7 +96,7 @@ def main():
 
     #-------------------Répétitions pour moyenner-----------
     analyse_mult = Analyse_multiple(args.repetitions)
-    
+
     for i in range(args.repetitions):
         x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
 
@@ -125,6 +125,7 @@ def main():
         analyse = Analyse(t_test, predictions_test, prob)
         analyse.calculer_comptes()
         analyse.afficher_comptes()
+        analyse.calculer_metriques()
         analyse.afficher_metriques()
         analyse.calculer_courbe_roc()
         analyse.afficher_courbe_roc()
