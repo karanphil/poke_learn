@@ -21,6 +21,8 @@ def _build_args_parser():
                     choices=["bayes_naif","perceptron",
                     "perceptron_mc","svm","fad","adaboost"],
                     help="Choix du modèle à utiliser.")
+    p.add_argument("--repetitions", type=int, default=1,
+                    help="Nombre de répétitions à faire pour moyenner.")
     p.add_argument("--est_ech_poids", type=int, default=0,
                     choices=[0,1],
                     help="Choix de poids d'échantillon ou pas.")
@@ -74,8 +76,6 @@ def main():
     else:
         poids = []
 
-    x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
-
     #-------------------Gestion du modèle----------------------------
     print("Création du modèle...")
     if(args.choix_modele == "bayes_naif"):
@@ -93,34 +93,39 @@ def main():
     elif(args.choix_modele == "adaboost"):
         modele = AdaBoost(max_prof = args.prof_max_adaboost)
 
-    #-------------------Entrainement ou validation croisée-----------
-    if bool(args.vc) is False:
-        print("Début de l'entrainement simple...")
-        modele.entrainement(x_entr, t_entr, args.est_ech_poids, poids) 
-    else:
-        print("Début de l'entrainement par validation croisée...")
-        modele.validation_croisee(x_entr, t_entr, 10, args.est_ech_poids, poids)
 
-    #-------------------Prédiction et erreur-------------------------
-    print("Calcul des erreurs...")
-    predictions_entrainement = modele.prediction(x_entr)
-    erreur_entrainement = modele.erreur(t_entr, predictions_entrainement) / len(t_entr) * 100
+    #-------------------Répétitions pour moyenner-----------
+    for i in range(args.repetitions):
+        x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
 
-    predictions_test = modele.prediction(x_test)
-    erreur_test = modele.erreur(t_test, predictions_test) / len(t_test) * 100
+        #-------------------Entrainement ou validation croisée-----------
+        if bool(args.vc) is False:
+            print("Début de l'entrainement simple...")
+            modele.entrainement(x_entr, t_entr, args.est_ech_poids, poids) 
+        else:
+            print("Début de l'entrainement par validation croisée...")
+            modele.validation_croisee(x_entr, t_entr, 10, args.est_ech_poids, poids)
 
-    print('Erreur train = ', erreur_entrainement, '%')
-    print('Erreur test = ', erreur_test, '%')
+        #-------------------Prédiction et erreur-------------------------
+        print("Calcul des erreurs...")
+        predictions_entrainement = modele.prediction(x_entr)
+        erreur_entrainement = modele.erreur(t_entr, predictions_entrainement) / len(t_entr) * 100
 
-    #-------------------Analyse des résultats------------------------
-    print("Analyse des résultats...")
-    prob = modele.confiance_test(x_test)
-    analyse = Analyse(t_test, predictions_test, prob)
-    analyse.calculer_comptes()
-    analyse.afficher_comptes()
-    analyse.afficher_metriques()
-    analyse.calculer_courbe_roc()
-    analyse.afficher_courbe_roc()
+        predictions_test = modele.prediction(x_test)
+        erreur_test = modele.erreur(t_test, predictions_test) / len(t_test) * 100
+
+        print('Erreur train = ', erreur_entrainement, '%')
+        print('Erreur test = ', erreur_test, '%')
+
+        #-------------------Analyse des résultats------------------------
+        print("Analyse des résultats...")
+        prob = modele.confiance_test(x_test)
+        analyse = Analyse(t_test, predictions_test, prob)
+        analyse.calculer_comptes()
+        analyse.afficher_comptes()
+        analyse.afficher_metriques()
+        analyse.calculer_courbe_roc()
+        analyse.afficher_courbe_roc()
     
 if __name__ == "__main__":
     main()
