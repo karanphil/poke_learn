@@ -137,7 +137,9 @@ def main():
         analyse_mult.ajouter_erreurs(erreur_entrainement, erreur_test, rep)
         analyse_mult.ajouter_metriques(analyse.metriques, rep)
 
+    #-------------------Analyse des répétitions------------------------
     if(args.repetitions > 1):
+        print("Analyse des répétitions...")
         analyse_mult.calculer_moyennes()
         analyse_mult.afficher_moyennes()
         analyse_mult.afficher_graphique()
