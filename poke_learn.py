@@ -8,7 +8,7 @@ from modeles.svm import SVM
 from modeles.fad import FAD
 from modeles.adaboost import AdaBoost
 from gestion_donnees import BaseDonnees
-from analyse import Analyse
+from analyse import Analyse, Analyse_multiple
 
 def _build_args_parser():
     p = argparse.ArgumentParser(
@@ -95,6 +95,8 @@ def main():
 
 
     #-------------------Répétitions pour moyenner-----------
+    analyse_mult = Analyse_multiple(args.repetitions)
+    
     for i in range(args.repetitions):
         x_entr, t_entr, x_test, t_test= bd.faire_ens_entr_test()
 

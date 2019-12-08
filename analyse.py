@@ -130,3 +130,16 @@ class Analyse:
         plt.ylabel("TVP")
         plt.plot(self.tfp, self.tvp, "b-")
         plt.show()
+
+
+class Analyse_multiple:
+    def __init__(self, repetitions):
+        self.repetitions = repetitions
+        self.erreurs = np.ndarray((2, repetitions))
+        self.metriques = np.ndarray((5, repetitions))
+
+    def ajouter_erreurs(self, erreur_ent, erreur_test):
+        return 0
+
+    def calculer_moyennes(self):
+        return 0
