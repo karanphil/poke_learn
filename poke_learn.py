@@ -17,12 +17,13 @@ def _build_args_parser():
                     help="Nom du fichier de données.")
     p.add_argument("vc", type=int, choices=[0,1],
                     help="Choix de validation croisée ou pas.")
-    p.add_argument("est_ech_poids", type=int, choices=[0,1],
-                    help="Choix de poids d'échantillon ou pas.")
     p.add_argument("choix_modele", type=str, 
                     choices=["bayes_naif","perceptron",
                     "perceptron_mc","svm","fad","adaboost"],
                     help="Choix du modèle à utiliser.")
+    p.add_argument("--est_ech_poids", type=int, default=0,
+                    choices=[0,1],
+                    help="Choix de poids d'échantillon ou pas.")
     p.add_argument("--tol_perceptron", type=float, default=1e-3,
                     help="Critère de tolérance (perceptron).")
     p.add_argument("--max_iter_perceptron", type=int, default=1000,
