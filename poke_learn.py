@@ -23,6 +23,9 @@ def _build_args_parser():
                     help="Choix du modèle à utiliser.")
     p.add_argument("--repetitions", type=int, default=1,
                     help="Nombre de répétitions à faire pour moyenner.")
+    p.add_argument("--courbe_roc", type=int, default=0,
+                    choices=[0,1],
+                    help="Choix de courbe ROC ou pas.")
     p.add_argument("--est_ech_poids", type=int, default=0,
                     choices=[0,1],
                     help="Choix de poids d'échantillon ou pas.")
@@ -127,8 +130,9 @@ def main():
         analyse.afficher_comptes()
         analyse.calculer_metriques()
         analyse.afficher_metriques()
-        analyse.calculer_courbe_roc()
-        #analyse.afficher_courbe_roc()
+        if(bool(args.courbe_roc)):
+            analyse.calculer_courbe_roc()
+            analyse.afficher_courbe_roc()
 
         analyse_mult.ajouter_erreurs(erreur_entrainement, erreur_test, rep)
         analyse_mult.ajouter_metriques(analyse.metriques, rep)
