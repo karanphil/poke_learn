@@ -192,12 +192,10 @@ class BaseDonnees:
     def voir_att(self):
         """
         Affiche la liste des noms des colonnes, soit les attributs,
-        et le type de données de chacun des attributs et
-        retourne la liste du nom des colonnes.
+        et le type de données de chacun des attributs.
         """
         print("Liste des attributs :")
         print(self.bd.dtypes)
-        return self.bd.columns
 
     def enregistre_bd(self, nouvelle_bd, nom_fichier):
         """

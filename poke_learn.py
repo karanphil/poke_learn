@@ -69,7 +69,7 @@ def main():
     # -------------------Gestion des données--------------------------
     print("\n" + "Gestion des données...")
     bd = BaseDonnees(args.fichier, 'is_legendary')
-    liste_colonne = bd.voir_att()
+    bd.voir_att()
     bd.enlever_attributs(['abilities', 'japanese_name', 'name', 'generation',
                             'pokedex_number', 'classfication'])
     bd.str_a_int(['capture_rate'])
