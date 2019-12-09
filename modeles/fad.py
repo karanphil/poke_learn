@@ -2,6 +2,7 @@
 from .classifieur import Classifieur
 from sklearn.ensemble import RandomForestClassifier
 
+
 class FAD(Classifieur):
     '''
     Implémentation du modèle de bayes naif. Cette classe possède
@@ -16,6 +17,8 @@ class FAD(Classifieur):
     Toutes les autres méthodes proviennent de la classe parent
     Classifieur, qui se charge des méthodes générales.
     '''
-    def __init__(self, nb_arbres = 10, critere = 'gini', prof_max = None, bootstrap = True):
-        self.modele = RandomForestClassifier(n_estimators = nb_arbres, 
-                        criterion = critere, max_depth = prof_max, bootstrap = bootstrap)
+    def __init__(self, nb_arbres=10, critere='gini',
+                    prof_max=None, bootstrap=True):
+        self.modele = RandomForestClassifier(n_estimators=nb_arbres,
+                        criterion=critere, max_depth=prof_max,
+                        bootstrap=bootstrap)

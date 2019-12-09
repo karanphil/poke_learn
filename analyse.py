@@ -4,20 +4,21 @@ from sklearn.metrics import confusion_matrix, roc_curve
 from matplotlib import pyplot as plt
 import matplotlib.gridspec as gridspec
 
+
 class Analyse:
     def __init__(self, verite_terrain, resultats, probabilites):
         """
-        Classe servant à faire l'analyse des résultats de 
+        Classe servant à faire l'analyse des résultats de
         l'entraînement d'un modèle, basé sur des métriques
         telles que le rappel, la justesse, la précision, etc,
         ainsi que sur une courbe ROC.
 
         Prend en entrée la vérité terrain (donc les étiquettes
         de classe), les résultats (donc les prédictions du modèle)
-        et les probabilités des résultats, tels que fournis 
+        et les probabilités des résultats, tels que fournis
         préalablement par la méthode confiance_test de la classe
         Classifieur.
-        """ 
+        """
         self.verite_terrain = verite_terrain
         self.resultats = resultats
         self.probabilites = probabilites
@@ -29,23 +30,23 @@ class Analyse:
         self.tfp = None
         self.metriques = np.zeros(5)
 
-    def calculer_comptes(self, est_ech_poids = False, *args):
+    def calculer_comptes(self, est_ech_poids=False, *args):
         """
-        Cette méthode compte le nombre de vrais positifs, de 
+        Cette méthode compte le nombre de vrais positifs, de
         faux positifs, de vrais négatifs et de faux négatifs.
         Elle doit être appelée avant de pouvoir utiliser les prochaines
         méthodes (autre que celles concernant la courbe ROC).
         """
         # Cas avec poids variables
         if(est_ech_poids):
-            matrice_confusion = confusion_matrix(self.verite_terrain, 
-                                self.resultats, sample_weight = args[0])
+            matrice_confusion = confusion_matrix(self.verite_terrain,
+                                self.resultats, sample_weight=args[0])
         # Cas sans poids variables
         else:
-            matrice_confusion = confusion_matrix(self.verite_terrain, 
+            matrice_confusion = confusion_matrix(self.verite_terrain,
                                 self.resultats)
         self.vn, self.fp, self.fn, self.vp = matrice_confusion.ravel()
-    
+
     def afficher_comptes(self):
         """
         Cette méthode sert à afficher à l'écran les résultats
@@ -87,7 +88,7 @@ class Analyse:
         rappel = self.calculer_rappel()
         precision = self.calculer_precision()
         return((2 * rappel * precision) / (rappel + precision))
-    
+
     def calculer_metriques(self):
         """
         Cette méthode sert à calculer les  différentes
@@ -110,22 +111,22 @@ class Analyse:
         print("Spécificité = ", self.metriques[3])
         print("Mesure-f = ", self.metriques[4])
 
-    def calculer_courbe_roc(self, est_ech_poids = False, *args):
+    def calculer_courbe_roc(self, est_ech_poids=False, *args):
         """
         Cette méthode calcule le nécessaire pour afficher
         une courbe ROC.
         """
         # Cas avec poids variables
         if(est_ech_poids):
-            self.tfp, self.tvp, seuil = roc_curve(self.verite_terrain, 
-                                                    self.probabilites, 
-                                                    sample_weight = args[0], 
-                                                    drop_intermediate = False) 
+            self.tfp, self.tvp, seuil = roc_curve(self.verite_terrain,
+                                                    self.probabilites,
+                                                    sample_weight=args[0],
+                                                    drop_intermediate=False)
         # Cas sans poids variables
         else:
-            self.tfp, self.tvp, seuil = roc_curve(self.verite_terrain, 
-                                                    self.probabilites, 
-                                                    drop_intermediate = False) 
+            self.tfp, self.tvp, seuil = roc_curve(self.verite_terrain,
+                                                    self.probabilites,
+                                                    drop_intermediate=False)
 
     def afficher_courbe_roc(self):
         """
@@ -134,7 +135,7 @@ class Analyse:
         """
         graph_init()
         plt.figure()
-        #plt.title("Courbe ROC")
+        # plt.title("Courbe ROC")
         plt.xlabel("TFP")
         plt.ylabel("TVP")
         plt.plot(self.tfp, self.tvp, "b-")
@@ -144,19 +145,19 @@ class Analyse:
 class Analyse_multiple:
     def __init__(self, repetitions):
         """
-        Classe servant à faire l'analyse des résultats de 
-        l'entraînement d'un modèle, à la suite de plusieurs 
+        Classe servant à faire l'analyse des résultats de
+        l'entraînement d'un modèle, à la suite de plusieurs
         répétitions. Elle sert à compléter la classe Analyse
         en calculant les moyennes des métriques et en affichant
         l'évolution de celles-ci au cours des répétitions.
 
         Prend en entrée le nombre de répétitions choisi.
-        """ 
+        """
         self.repetitions = repetitions
         self.erreurs = np.ndarray((repetitions, 2))
         self.metriques = np.ndarray((repetitions, 5))
-        self.erreurs_moy = np.array([0,0])
-        self.metriques_moy = np.array([0,0,0,0,0])
+        self.erreurs_moy = np.array([0, 0])
+        self.metriques_moy = np.array([0, 0, 0, 0, 0])
         self.rep_courante = 0
 
     def ajouter_erreurs(self, erreur_ent, erreur_test):
@@ -178,12 +179,12 @@ class Analyse_multiple:
         Cette méthode calculer les moyennes des erreurs
         et des métriques, idéalement à la fin des répétitions
         """
-        self.erreurs_moy = np.mean(self.erreurs, axis = 0)
-        self.metriques_moy = np.mean(self.metriques, axis = 0)
-    
+        self.erreurs_moy = np.mean(self.erreurs, axis=0)
+        self.metriques_moy = np.mean(self.metriques, axis=0)
+
     def augmenter_rep_courante(self):
         """
-        Cette méthode sert à mettre à jour l'itérateur 
+        Cette méthode sert à mettre à jour l'itérateur
         self.rep_courante pour savoir à quelle répétition
         le code est rendu.
         """
@@ -211,35 +212,36 @@ class Analyse_multiple:
         graph_init()
         fig = plt.figure()
         widths = [2]
-        heights = [1,1]
-        gs = gridspec.GridSpec(2, 1, figure = fig, width_ratios=widths,
+        heights = [1, 1]
+        gs = gridspec.GridSpec(2, 1, figure=fig, width_ratios=widths,
                           height_ratios=heights)
         ax = fig.add_subplot(gs[0, 0])
-        ax.plot(rep, 100 - self.erreurs[:, 0], "bs-", label = "Entrainement")
-        ax.plot(rep, 100 - self.erreurs[:, 1], "gs-", label = "Test")
-        ax.axhline(100 - self.erreurs_moy[0], color = "b", 
-                    linestyle = "--", alpha = 0.4, linewidth = 1.5)
-        ax.axhline(100 - self.erreurs_moy[1], color = "g", 
-                    linestyle = "--", alpha = 0.4, linewidth = 1.5)
+        ax.plot(rep, 100 - self.erreurs[:, 0], "bs-", label="Entrainement")
+        ax.plot(rep, 100 - self.erreurs[:, 1], "gs-", label="Test")
+        ax.axhline(100 - self.erreurs_moy[0], color="b",
+                    linestyle="--", alpha=0.4, linewidth=1.5)
+        ax.axhline(100 - self.erreurs_moy[1], color="g",
+                    linestyle="--", alpha=0.4, linewidth=1.5)
         plt.ylabel("Justesse en %")
-        plt.legend(loc = 1)
+        plt.legend(loc=1)
         plt.xticks(rep)
         ax = fig.add_subplot(gs[1, 0])
-        ax.plot(rep, self.metriques[:, 0] * 100, "ro-", label = "Rappel")
-        #plt.plot(rep, self.metriques[:, 1] * 100, "o-", label = "Justesse")
-        ax.plot(rep, self.metriques[:, 2] * 100, "co-", label = "Précision")
-        ax.plot(rep, self.metriques[:, 3] * 100, "yo-", label = "Spécificité")
-        #plt.plot(rep, self.metriques[:, 4] * 100, "o-", label = "Mesure-f")
+        ax.plot(rep, self.metriques[:, 0] * 100, "ro-", label="Rappel")
+        # plt.plot(rep, self.metriques[:, 1] * 100, "o-", label="Justesse")
+        ax.plot(rep, self.metriques[:, 2] * 100, "co-", label="Précision")
+        ax.plot(rep, self.metriques[:, 3] * 100, "yo-", label="Spécificité")
+        # plt.plot(rep, self.metriques[:, 4] * 100, "o-", label="Mesure-f")
         plt.ylabel("Métriques en %")
         plt.xlabel("# de répétition")
         plt.xticks(rep)
-        plt.legend(loc = 1)
+        plt.legend(loc=1)
         plt.tight_layout()
         plt.show()
 
+
 def graph_init():
     """
-    Cette méthode à part sert à initialiser les 
+    Cette méthode à part sert à initialiser les
     paramètres d'un graphique.
     """
     plt.style.use('seaborn-notebook')
@@ -251,10 +253,10 @@ def graph_init():
     plt.rcParams['figure.figsize'] = (12.0, 7.0)
     plt.rcParams['font.size'] = 19
     plt.rcParams['axes.labelsize'] = plt.rcParams['font.size']
-    plt.rcParams['axes.titlesize'] = 1*plt.rcParams['font.size']
+    plt.rcParams['axes.titlesize'] = 1 * plt.rcParams['font.size']
     plt.rcParams['legend.fontsize'] = plt.rcParams['font.size']
-    plt.rcParams['xtick.labelsize'] = 0.9*plt.rcParams['font.size']
-    plt.rcParams['ytick.labelsize'] = 0.9*plt.rcParams['font.size']
-    plt.rcParams['axes.linewidth'] =1
-    plt.rcParams['lines.linewidth']=2
-    plt.rcParams['lines.markersize']=8
+    plt.rcParams['xtick.labelsize'] = 0.9 * plt.rcParams['font.size']
+    plt.rcParams['ytick.labelsize'] = 0.9 * plt.rcParams['font.size']
+    plt.rcParams['axes.linewidth'] = 1
+    plt.rcParams['lines.linewidth'] = 2
+    plt.rcParams['lines.markersize'] = 8
