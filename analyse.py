@@ -208,8 +208,8 @@ class Analyse_multiple:
         les résultats compilés au fil des répétitions.
         """
         rep = np.arange(1, self.repetitions + 1, 1)
-        fig = plt.figure(figsize=(15,15))
         graph_init()
+        fig = plt.figure()
         widths = [2]
         heights = [1,1]
         gs = gridspec.GridSpec(2, 1, figure = fig, width_ratios=widths,
@@ -218,9 +218,9 @@ class Analyse_multiple:
         ax.plot(rep, 100 - self.erreurs[:, 0], "bs-", label = "Entrainement")
         ax.plot(rep, 100 - self.erreurs[:, 1], "gs-", label = "Test")
         ax.axhline(100 - self.erreurs_moy[0], color = "b", 
-                    linestyle = "--", alpha = 0.3, linewidth = 1.5)
+                    linestyle = "--", alpha = 0.4, linewidth = 1.5)
         ax.axhline(100 - self.erreurs_moy[1], color = "g", 
-                    linestyle = "--", alpha = 0.3, linewidth = 1.5)
+                    linestyle = "--", alpha = 0.4, linewidth = 1.5)
         plt.ylabel("Justesse en %")
         plt.legend(loc = 1)
         plt.xticks(rep)
@@ -234,6 +234,7 @@ class Analyse_multiple:
         plt.xlabel("# de répétition")
         plt.xticks(rep)
         plt.legend(loc = 1)
+        plt.tight_layout()
         plt.show()
 
 def graph_init():
@@ -247,8 +248,8 @@ def graph_init():
     plt.rcParams['grid.linewidth'] = 1
     plt.rcParams['grid.linestyle'] = "-"
     plt.rcParams['grid.alpha'] = "0.5"
-    plt.rcParams['figure.figsize'] = (13.0, 9.0)
-    plt.rcParams['font.size'] = 15
+    plt.rcParams['figure.figsize'] = (12.0, 7.0)
+    plt.rcParams['font.size'] = 19
     plt.rcParams['axes.labelsize'] = plt.rcParams['font.size']
     plt.rcParams['axes.titlesize'] = 1*plt.rcParams['font.size']
     plt.rcParams['legend.fontsize'] = plt.rcParams['font.size']
