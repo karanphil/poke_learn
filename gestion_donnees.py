@@ -109,12 +109,28 @@ class BaseDonnees:
         """
         corr_avc_cible = abs(self.calculer_cc()[self.att_cible])
         att_pertinents = list(corr_avc_cible[corr_avc_cible > seuil_cc].index)
-        att_pertinents.append(self.att_cible)
         if comp_att:
             att_pertinents = self.comparaison_corr_entre_att(att_pertinents,
                                                                 corr_avc_cible)
         self.bd = self.bd[att_pertinents]
         print('Méthode de filtrage appliquée.')
+
+    def appliquer_seuil_min_max_cc(self, seuil_min=0.1, seuil_max=0.32):
+        """
+        Applique un seuil sur le coefficient de corrélation afin
+        de sélectionner les variables nécessaires à l'entrainement.
+        Retire les colonnes inutiles de la
+        base de données.
+        ``seuil_min`` est un seuil minimal appliqué aux attributs selon
+        le coefficient de corrélation.
+        ``seuil_max`` est un seuil maximal appliqué aux attributs selon
+        le coefficient de corrélation.
+        """
+        corr_avc_cible = abs(self.calculer_cc()[self.att_cible])
+        corr_min = corr_avc_cible[corr_avc_cible > seuil_min]
+        att_pertinents = list(corr_min[corr_min < seuil_max].index)
+        att_pertinents.append(self.att_cible)
+        self.bd = self.bd[att_pertinents]
 
     def comparaison_corr_entre_att(self, att, corr_avc_cible, seuil_cc=0.65):
         """
