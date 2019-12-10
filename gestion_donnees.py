@@ -99,7 +99,7 @@ class BaseDonnees:
             self.afficher_cc(abs(cc))
         return cc
 
-    def methode_filtrage(self, comp_att=True, seuil_cc=0.1):
+    def methode_filtrage(self, comp_att=False, seuil_cc=0.1):
         """
         Applique la méthode de filtrage afin de sélectionner les variables
         nécessaires à l'entrainement. Retire les colonnes inutiles de la
@@ -114,6 +114,23 @@ class BaseDonnees:
                                                                 corr_avc_cible)
         self.bd = self.bd[att_pertinents]
         print('Méthode de filtrage appliquée.')
+
+    def appliquer_seuil_min_max_cc(self, seuil_min=0.1, seuil_max=0.32):
+        """
+        Applique un seuil sur le coefficient de corrélation afin
+        de sélectionner les variables nécessaires à l'entrainement.
+        Retire les colonnes inutiles de la
+        base de données.
+        ``seuil_min`` est un seuil minimal appliqué aux attributs selon
+        le coefficient de corrélation.
+        ``seuil_max`` est un seuil maximal appliqué aux attributs selon
+        le coefficient de corrélation.
+        """
+        corr_avc_cible = abs(self.calculer_cc()[self.att_cible])
+        corr_min = corr_avc_cible[corr_avc_cible > seuil_min]
+        att_pertinents = list(corr_min[corr_min < seuil_max].index)
+        att_pertinents.append(self.att_cible)
+        self.bd = self.bd[att_pertinents]
 
     def comparaison_corr_entre_att(self, att, corr_avc_cible, seuil_cc=0.65):
         """
@@ -233,6 +250,7 @@ class BaseDonnees:
 
         ``cc`` est la matrice de corrélation des attributs
         """
+        print(cc[self.att_cible])
         plt.matshow(cc)
         plt.xticks(range(self.bd.shape[1]), self.bd.columns, fontsize=6,
                     rotation=90)
