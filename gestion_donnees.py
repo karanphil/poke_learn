@@ -99,7 +99,7 @@ class BaseDonnees:
             self.afficher_cc(abs(cc))
         return cc
 
-    def methode_filtrage(self, comp_att=True, seuil_cc=0.1):
+    def methode_filtrage(self, comp_att=False, seuil_cc=0.1):
         """
         Applique la méthode de filtrage afin de sélectionner les variables
         nécessaires à l'entrainement. Retire les colonnes inutiles de la
@@ -109,6 +109,7 @@ class BaseDonnees:
         """
         corr_avc_cible = abs(self.calculer_cc()[self.att_cible])
         att_pertinents = list(corr_avc_cible[corr_avc_cible > seuil_cc].index)
+        att_pertinents.append(self.att_cible)
         if comp_att:
             att_pertinents = self.comparaison_corr_entre_att(att_pertinents,
                                                                 corr_avc_cible)
@@ -233,6 +234,7 @@ class BaseDonnees:
 
         ``cc`` est la matrice de corrélation des attributs
         """
+        print(cc[self.att_cible])
         plt.matshow(cc)
         plt.xticks(range(self.bd.shape[1]), self.bd.columns, fontsize=6,
                     rotation=90)
